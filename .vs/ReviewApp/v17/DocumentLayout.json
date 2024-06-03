@@ -1,0 +1,160 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Asus\\Desktop\\Review.App\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\pokemon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\pokemon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\pokemonowner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\pokemonowner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\pokemoncategory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\pokemoncategory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\review.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\review.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\owner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\owner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\reviewer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\reviewer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\country.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\country.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 12,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0174dea2-fdbe-4ef1-8f99-c0beae78880f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PokemonOwner.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\PokemonOwner.cs",
+              "RelativeDocumentMoniker": "ReviewApp\\Models\\PokemonOwner.cs",
+              "ToolTip": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\PokemonOwner.cs",
+              "RelativeToolTip": "ReviewApp\\Models\\PokemonOwner.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-03T14:35:45.331Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PokemonCategory.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\PokemonCategory.cs",
+              "RelativeDocumentMoniker": "ReviewApp\\Models\\PokemonCategory.cs",
+              "ToolTip": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\PokemonCategory.cs",
+              "RelativeToolTip": "ReviewApp\\Models\\PokemonCategory.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-03T14:34:34.387Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Review.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Review.cs",
+              "RelativeDocumentMoniker": "ReviewApp\\Models\\Review.cs",
+              "ToolTip": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Review.cs",
+              "RelativeToolTip": "ReviewApp\\Models\\Review.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-03T14:30:13.959Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Owner.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Owner.cs",
+              "RelativeDocumentMoniker": "ReviewApp\\Models\\Owner.cs",
+              "ToolTip": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Owner.cs",
+              "RelativeToolTip": "ReviewApp\\Models\\Owner.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-03T14:29:07.872Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Reviewer.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Reviewer.cs",
+              "RelativeDocumentMoniker": "ReviewApp\\Models\\Reviewer.cs",
+              "ToolTip": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Reviewer.cs",
+              "RelativeToolTip": "ReviewApp\\Models\\Reviewer.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-03T14:28:01.211Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Country.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Country.cs",
+              "RelativeDocumentMoniker": "ReviewApp\\Models\\Country.cs",
+              "ToolTip": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Country.cs",
+              "RelativeToolTip": "ReviewApp\\Models\\Country.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-03T14:27:29.334Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Pokemon.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Pokemon.cs",
+              "RelativeDocumentMoniker": "ReviewApp\\Models\\Pokemon.cs",
+              "ToolTip": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Pokemon.cs",
+              "RelativeToolTip": "ReviewApp\\Models\\Pokemon.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-03T14:26:52.826Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
