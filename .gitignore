@@ -74,3 +74,10 @@ $RECYCLE.BIN/
 
 # Local History for Visual Studio
 .vs/
+
+# Cache files
+.cache/
+*.cache
+
+# Ignore secrets file
+secrets.txt

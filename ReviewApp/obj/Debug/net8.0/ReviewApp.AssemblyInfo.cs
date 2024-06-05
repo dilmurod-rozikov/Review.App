@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ReviewApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+25a0872295d4b558547663bd3bd2270beb4739ed")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e00953f2bb48572b2265767c8bbcf646319ab050")]
 [assembly: System.Reflection.AssemblyProductAttribute("ReviewApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ReviewApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

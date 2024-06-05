@@ -3,24 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\Asus\\Desktop\\Review.App\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\pokemon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\pokemon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\pokemonowner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\pokemonowner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\pokemoncategory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\pokemoncategory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\owner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\owner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\review.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\review.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\owner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|solutionrelative:reviewapp\\models\\owner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D8CA18F0-E37C-4FFC-8A28-B697CEFFB738}|ReviewApp\\ReviewApp.csproj|c:\\users\\asus\\desktop\\review.app\\reviewapp\\models\\reviewer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,7 +34,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 12,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -66,26 +62,14 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "PokemonOwner.cs",
-              "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\PokemonOwner.cs",
-              "RelativeDocumentMoniker": "ReviewApp\\Models\\PokemonOwner.cs",
-              "ToolTip": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\PokemonOwner.cs",
-              "RelativeToolTip": "ReviewApp\\Models\\PokemonOwner.cs",
+              "DocumentIndex": 0,
+              "Title": "Category.cs",
+              "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Category.cs",
+              "RelativeDocumentMoniker": "ReviewApp\\Models\\Category.cs",
+              "ToolTip": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Category.cs",
+              "RelativeToolTip": "ReviewApp\\Models\\Category.cs",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-03T14:35:45.331Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "PokemonCategory.cs",
-              "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\PokemonCategory.cs",
-              "RelativeDocumentMoniker": "ReviewApp\\Models\\PokemonCategory.cs",
-              "ToolTip": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\PokemonCategory.cs",
-              "RelativeToolTip": "ReviewApp\\Models\\PokemonCategory.cs",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-03T14:34:34.387Z",
+              "WhenOpened": "2024-06-03T14:39:19.724Z",
               "EditorCaption": ""
             },
             {
@@ -102,7 +86,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "Owner.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Owner.cs",
               "RelativeDocumentMoniker": "ReviewApp\\Models\\Owner.cs",
@@ -114,7 +98,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "Reviewer.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Reviewer.cs",
               "RelativeDocumentMoniker": "ReviewApp\\Models\\Reviewer.cs",
@@ -126,7 +110,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 5,
               "Title": "Country.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Country.cs",
               "RelativeDocumentMoniker": "ReviewApp\\Models\\Country.cs",
@@ -138,7 +122,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Pokemon.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\Desktop\\Review.App\\ReviewApp\\Models\\Pokemon.cs",
               "RelativeDocumentMoniker": "ReviewApp\\Models\\Pokemon.cs",
