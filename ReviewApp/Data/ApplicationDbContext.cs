@@ -27,10 +27,12 @@ namespace ReviewApp.Data
         {
             modelBuilder.Entity<PokemonCategory>()
                 .HasKey(pc => new { pc.PokemonId, pc.CategoryId });
+
             modelBuilder.Entity<PokemonCategory>()
                 .HasOne(p => p.Pokemon)
                 .WithMany(pc => pc.PokemonCategories)
                 .HasForeignKey(p => p.PokemonId);
+
             modelBuilder.Entity<PokemonCategory>()
                .HasOne(p => p.Category)
                .WithMany(pc => pc.PokemonCategories)
@@ -38,10 +40,12 @@ namespace ReviewApp.Data
 
             modelBuilder.Entity<PokemonOwner>()
                 .HasKey(pc => new { pc.PokemonId, pc.OwnerId });
+
             modelBuilder.Entity<PokemonOwner>()
                 .HasOne(p => p.Pokemon)
                 .WithMany(pc => pc.PokemonOwners)
                 .HasForeignKey(p => p.PokemonId);
+
             modelBuilder.Entity<PokemonOwner>()
                .HasOne(p => p.Owner)
                .WithMany(pc => pc.PokemonOwners)
