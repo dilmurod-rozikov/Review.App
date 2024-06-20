@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
-using ReviewApp.Repository;
 
 namespace ReviewApp.Controllers
 {

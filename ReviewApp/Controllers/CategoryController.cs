@@ -30,7 +30,6 @@ namespace ReviewApp.Controllers
             return Ok(categories);
         }
 
-
         [HttpGet("{categoryId}")]
         [ProducesResponseType(200, Type = typeof(Pokemon))]
         [ProducesResponseType(400)]
