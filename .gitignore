@@ -361,3 +361,30 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/ReviewApp/obj/Debug/net8.0/ReviewApp.AssemblyInfo.cs
+/ReviewApp/obj/Debug/net8.0/ReviewApp.AssemblyInfoInputs.cache
+/ReviewApp/obj/Debug/net8.0/ReviewApp.assets.cache
+/ReviewApp/bin/Debug/net8.0/Microsoft.OpenApi.dll
+/ReviewApp/bin/Debug/net8.0/ReviewApp.deps.json
+/ReviewApp/bin/Debug/net8.0/ReviewApp.dll
+/ReviewApp/bin/Debug/net8.0/ReviewApp.exe
+/ReviewApp/bin/Debug/net8.0/ReviewApp.pdb
+/ReviewApp/bin/Debug/net8.0/Swashbuckle.AspNetCore.Swagger.dll
+/ReviewApp/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerGen.dll
+/ReviewApp/bin/Debug/net8.0/Swashbuckle.AspNetCore.SwaggerUI.dll
+/.vs/ReviewApp/v17/DocumentLayout.json
+/ReviewApp/obj/Debug/net8.0/ApiEndpoints.json
+/ReviewApp/obj/Debug/net8.0/apphost.exe
+/ReviewApp/obj/Debug/net8.0/ReviewApp.csproj.AssemblyReference.cache
+/ReviewApp/obj/Debug/net8.0/ReviewApp.csproj.CoreCompileInputs.cache
+/ReviewApp/obj/Debug/net8.0/ReviewApp.csproj.FileListAbsolute.txt
+/ReviewApp/obj/Debug/net8.0/ReviewApp.dll
+/ReviewApp/obj/Debug/net8.0/ReviewApp.pdb
+/ReviewApp/obj/Debug/net8.0/ReviewApp.sourcelink.json
+/ReviewApp/obj/project.assets.json
+/ReviewApp/obj/project.nuget.cache
+/ReviewApp/obj/ReviewApp.csproj.nuget.dgspec.json
+/ReviewApp/obj/ReviewApp.csproj.nuget.g.props
+/ReviewApp/obj/ReviewApp.csproj.nuget.g.targets
+/ReviewApp/obj/Debug/net8.0/refint/ReviewApp.dll
+/ReviewApp/obj/Debug/net8.0/ref/ReviewApp.dll
