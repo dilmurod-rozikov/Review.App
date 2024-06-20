@@ -28,11 +28,11 @@ namespace PokemonReviewApp
                             ],
                             Reviews =
                             [
-                                new() { Title="Pikachu",Description = "Pickahu is the best pokemon, because it is electric",
+                                new() { Title="Pikachu",Description = "Pickahu is the best pokemon, because it is electric", Rating = 3,
                                 Reviewer = new Reviewer(){ FirstName = "Teddy", LastName = "Smith" } },
-                                new() { Title="Pikachu", Description = "Pickachu is the best a killing rocks",
+                                new() { Title="Pikachu", Description = "Pickachu is the best a killing rocks", Rating = 4,
                                 Reviewer = new Reviewer(){ FirstName = "Taylor", LastName = "Jones" } },
-                                new() { Title="Pikachu",Description = "Pickchu, pickachu, pikachu",
+                                new() { Title="Pikachu",Description = "Pickchu, pickachu, pikachu", Rating = 5,
                                 Reviewer = new Reviewer(){ FirstName = "Jessica", LastName = "McGregor" } },
                             ]
                         },
@@ -58,11 +58,11 @@ namespace PokemonReviewApp
                             ],
                             Reviews =
                             [
-                                new Review { Title= "Squirtle", Description = "squirtle is the best pokemon, because it is electric",
+                                new Review { Title= "Squirtle", Description = "squirtle is the best pokemon, because it is electric", Rating = 2,
                                 Reviewer = new Reviewer(){ FirstName = "Teddy", LastName = "Smith" } },
-                                new Review { Title= "Squirtle", Description = "Squirtle is the best a killing rocks",
+                                new Review { Title= "Squirtle", Description = "Squirtle is the best a killing rocks", Rating = 3,
                                 Reviewer = new Reviewer(){ FirstName = "Taylor", LastName = "Jones" } },
-                                new Review { Title= "Squirtle", Description = "squirtle, squirtle, squirtle",
+                                new Review { Title= "Squirtle", Description = "squirtle, squirtle, squirtle", Rating = 4,
                                 Reviewer = new Reviewer(){ FirstName = "Jessica", LastName = "McGregor" } },
                             ]
                         },
@@ -88,11 +88,11 @@ namespace PokemonReviewApp
                             ],
                             Reviews =
                             [
-                                new Review { Title="Veasaur",Description = "Venasuar is the best pokemon, because it is electric",
+                                new Review { Title="Veasaur",Description = "Venasuar is the best pokemon, because it is electric", Rating = 1,
                                 Reviewer = new Reviewer(){ FirstName = "Teddy", LastName = "Smith" } },
-                                new Review { Title="Veasaur",Description = "Venasuar is the best a killing rocks",
+                                new Review { Title="Veasaur",Description = "Venasuar is the best a killing rocks", Rating = 2,
                                 Reviewer = new Reviewer(){ FirstName = "Taylor", LastName = "Jones" } },
-                                new Review { Title="Veasaur",Description = "Venasuar, Venasuar, Venasuar",
+                                new Review { Title="Veasaur",Description = "Venasuar, Venasuar, Venasuar", Rating = 3,
                                 Reviewer = new Reviewer(){ FirstName = "Jessica", LastName = "McGregor" } },
                             ]
                         },

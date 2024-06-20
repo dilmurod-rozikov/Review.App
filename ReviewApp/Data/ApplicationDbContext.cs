@@ -13,7 +13,7 @@ namespace ReviewApp.Data
 
         public DbSet<Owner> Owners { get; set; }
 
-        public DbSet<Country> Countrys { get; set; }
+        public DbSet<Country> Countries { get; set; }
 
         public DbSet<PokemonCategory> PokemonCategories { get; set; }
 
