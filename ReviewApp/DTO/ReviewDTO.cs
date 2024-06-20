@@ -1,6 +1,6 @@
-﻿namespace ReviewApp.Models
+﻿namespace ReviewApp.DTO
 {
-    public class Review
+    public class ReviewDTO
     {
         public int Id { get; set; }
 
@@ -10,8 +10,5 @@
 
         public int Rating { get; set; }
 
-        public Reviewer? Reviewer { get; set; }
-
-        public Pokemon? Pokemon { get; set; }
     }
 }
