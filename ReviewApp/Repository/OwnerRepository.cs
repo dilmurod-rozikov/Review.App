@@ -36,5 +36,11 @@ namespace ReviewApp.Repository
         {
             return _context.Owners.ToList();
         }
+
+        public bool CreateOwner(Owner owner)
+        {
+            _context.Add(owner);
+            return _context.SaveChanges() > 0;
+        }
     }
 }

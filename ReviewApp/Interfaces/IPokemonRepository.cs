@@ -4,7 +4,7 @@ namespace ReviewApp.Interfaces
 {
     public interface IPokemonRepository
     {
-        public ICollection<Pokemon> GetPokemons();
+        ICollection<Pokemon> GetPokemons();
 
         Pokemon? GetPokemon(int id);
 
@@ -13,5 +13,7 @@ namespace ReviewApp.Interfaces
         decimal GetPokemonRating(int id);
 
         bool PokemonExists(int id);
+
+        bool CreatePokemon(int ownerId, int categoryId, Pokemon pokemon);
     }
 }

@@ -1,6 +1,4 @@
-﻿using ReviewApp.Models;
-
-namespace ReviewApp.DTO
+﻿namespace ReviewApp.DTO
 {
     public class OwnerDTO
     {
@@ -9,7 +7,5 @@ namespace ReviewApp.DTO
         public string Name { get; set; }
 
         public string Gym { get; set; }
-
-        public Country? Country { get; set; }
     }
 }

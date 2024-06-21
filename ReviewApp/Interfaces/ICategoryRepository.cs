@@ -2,7 +2,7 @@
 
 namespace ReviewApp.Interfaces
 {
-    public interface ICategoryRepositry
+    public interface ICategoryRepository
     {
         ICollection<Category> GetCategories();
 
@@ -11,5 +11,7 @@ namespace ReviewApp.Interfaces
         ICollection<Pokemon> GetPokemonsByCategory(int categoryId);
 
         bool CategoryExists(int categoryId);
+
+        bool CreateCategory(Category category);
     }
 }

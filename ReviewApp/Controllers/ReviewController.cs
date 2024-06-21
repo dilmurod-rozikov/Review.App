@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
+using ReviewApp.Repository;
 
 namespace ReviewApp.Controllers
 {
@@ -10,13 +12,21 @@ namespace ReviewApp.Controllers
     [ApiController]
     public class ReviewController : Controller
     {
-        private readonly IReviewRepository _reviewRepositry;
+        private readonly IReviewRepository _reviewRepository;
+        private readonly IReviewerRepository _reviewerRepository;
+        private readonly IPokemonRepository _pokemonRepository;
         private readonly IMapper _mapper;
 
-        public ReviewController(IReviewRepository reviewRepositry, IMapper mapper)
+        public ReviewController(
+            IReviewRepository reviewRepository,
+            IReviewerRepository reviewerRepository,
+            IPokemonRepository pokemonRepository,
+            IMapper mapper)
         {
             _mapper = mapper;
-            _reviewRepositry = reviewRepositry;
+            _pokemonRepository = pokemonRepository;
+            _reviewerRepository = reviewerRepository;
+            _reviewRepository = reviewRepository;
         }
 
         [HttpGet]
@@ -25,7 +35,7 @@ namespace ReviewApp.Controllers
         public IActionResult GetReviews()
         {
             var reviews = _mapper
-                .Map<List<ReviewDTO>>(_reviewRepositry.GetReviews());
+                .Map<List<ReviewDTO>>(_reviewRepository.GetReviews());
 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -39,11 +49,11 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetReview(int reviewId)
         {
-            if (!_reviewRepositry.ReviewExists(reviewId))
+            if (!_reviewRepository.ReviewExists(reviewId))
                 return NotFound();
 
             var review = _mapper
-                .Map<ReviewDTO>(_reviewRepositry.GetReview(reviewId));
+                .Map<ReviewDTO>(_reviewRepository.GetReview(reviewId));
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -57,16 +67,40 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(404)]
         public IActionResult GetReviewsOfPokemon(int pokemonId)
         {
-            if (!_reviewRepositry.ReviewExists(pokemonId))
+            if (!_reviewRepository.ReviewExists(pokemonId))
                 return NotFound();
 
             var reviews = _mapper
-                .Map<List<ReviewDTO>>(_reviewRepositry.GetReviewsOfAPokemon(pokemonId));
+                .Map<List<ReviewDTO>>(_reviewRepository.GetReviewsOfAPokemon(pokemonId));
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             return Ok(reviews);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult CreateReview([FromQuery]int pokemonId, [FromQuery] int reviewerId, [FromBody] ReviewDTO reviewDTO)
+        {
+            if (reviewDTO is null)
+                return BadRequest(ModelState);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var reviewMap = _mapper.Map<Review>(reviewDTO);
+            reviewMap.Pokemon = _pokemonRepository.GetPokemon(pokemonId);
+            reviewMap.Reviewer = _reviewerRepository.GetById(reviewerId);
+
+            if (!_reviewRepository.CreateReview(reviewMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Successfully created");
         }
     }
 }

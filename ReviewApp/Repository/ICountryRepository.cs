@@ -4,17 +4,23 @@ using ReviewApp.Models;
 
 namespace ReviewApp.Repository
 {
-    public class CountryRepositry : ICountryRepositry
+    public class ICountryRepository : ICountryRepositry
     {
         private readonly ApplicationDbContext _context;
 
-        public CountryRepositry(ApplicationDbContext context)
+        public ICountryRepository(ApplicationDbContext context)
         {
             _context = context;
         }
         public bool CountryExists(int id)
         {
             return _context.Countries.Any(c => c.Id == id);
+        }
+
+        public bool CreateCountry(Country country)
+        {
+            _context.Add(country);
+            return _context.SaveChanges() > 0;
         }
 
         public Country? GetCountry(int id)

@@ -13,5 +13,7 @@ namespace ReviewApp.Interfaces
         ICollection<Owner> GetOwnerListFromACountry(int countryId);
 
         bool CountryExists(int id);
+
+        bool CreateCountry(Country country);
     }
 }

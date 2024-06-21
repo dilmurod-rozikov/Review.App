@@ -30,5 +30,11 @@ namespace ReviewApp.Repository
         {
             return _context.Reviews.ToList();
         }
+
+        public bool CreateReview(Review review)
+        {
+            _context.Add(review);
+            return _context.SaveChanges() > 0;
+        }
     }
 }
