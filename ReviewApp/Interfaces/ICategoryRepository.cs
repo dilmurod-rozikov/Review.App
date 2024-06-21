@@ -13,5 +13,7 @@ namespace ReviewApp.Interfaces
         bool CategoryExists(int categoryId);
 
         bool CreateCategory(Category category);
+
+        bool UpdateCategory(Category category);
     }
 }

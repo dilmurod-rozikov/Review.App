@@ -90,5 +90,34 @@ namespace ReviewApp.Controllers
 
             return Ok("Successfully created....");
         }
+
+        [HttpPut("{categoryId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateCategory(int categoryId, [FromBody] CategoryDTO category)
+        {
+            if (category is null)
+                return BadRequest(ModelState);
+
+            if (categoryId != category.Id)
+                return BadRequest(ModelState);
+
+            if (!_categoryRepositry.CategoryExists(categoryId))
+                return NotFound(ModelState);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var categoryMap = _mapper.Map<Category>(category);
+
+            if(!_categoryRepositry.UpdateCategory(categoryMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while updating");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
     }
 }

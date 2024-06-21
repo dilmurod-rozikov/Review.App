@@ -16,8 +16,10 @@ namespace ReviewApp.Controllers
         private readonly ICountryRepository _countryRepository;
         private readonly IMapper _mapper;
 
-        public OwnerController(IOwnerRepository ownerRepository,
-            ICountryRepository countryRepository, IMapper mapper)
+        public OwnerController(
+            IOwnerRepository ownerRepository,
+            ICountryRepository countryRepository,
+            IMapper mapper)
         {
             _mapper = mapper;
             _ownerRepository = ownerRepository;
@@ -117,6 +119,35 @@ namespace ReviewApp.Controllers
             }
 
             return Ok("Successfully created....");
+        }
+
+        [HttpPut("{ownerId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateOwner(int ownerId, [FromBody] OwnerDTO owner)
+        {
+            if (owner is null)
+                return BadRequest(ModelState);
+
+            if (ownerId != owner.Id)
+                return BadRequest(ModelState);
+
+            if (!_ownerRepository.OwnerExists(ownerId))
+                return NotFound(ModelState);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var ownerMap = _mapper.Map<Owner>(owner);
+
+            if (!_ownerRepository.UpdateOwner(ownerMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while updating");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
         }
     }
 }
