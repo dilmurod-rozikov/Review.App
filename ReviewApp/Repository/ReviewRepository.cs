@@ -42,5 +42,11 @@ namespace ReviewApp.Repository
             _context.Update(review);
             return _context.SaveChanges() > 0;
         }
+
+        public bool DeleteReview(Review review)
+        {
+            _context.Remove(review);
+            return _context.SaveChanges() > 0;
+        }
     }
 }

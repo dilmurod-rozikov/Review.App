@@ -48,5 +48,11 @@ namespace ReviewApp.Repository
             _context.Update(country);
             return _context.SaveChanges() > 0;
         }
+
+        public bool DeleteCountry(Country country)
+        {
+            _context.Remove(country);
+            return _context.SaveChanges() > 0;
+        }
     }
 }
