@@ -11,6 +11,13 @@ namespace ReviewApp.Repository
         {
             _context = context;
         }
+
+        public bool CreateReviewer(Reviewer reviewer)
+        {
+            _context.Add(reviewer);
+            return _context.SaveChanges() > 0;
+        }
+
         public ICollection<Reviewer> GetAll()
         {
             return _context.Reviewers.ToList();

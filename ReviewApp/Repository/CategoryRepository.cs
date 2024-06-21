@@ -4,7 +4,7 @@ using ReviewApp.Models;
 
 namespace ReviewApp.Repository
 {
-    public class CategoryRepository : ICategoryRepositry
+    public class CategoryRepository : ICategoryRepository
     {
         private readonly ApplicationDbContext _context;
         public CategoryRepository(ApplicationDbContext context)
@@ -14,6 +14,12 @@ namespace ReviewApp.Repository
         public bool CategoryExists(int categoryId)
         {
             return _context.Categories.Any(c => c.Id == categoryId);
+        }
+
+        public bool CreateCategory(Category category)
+        {
+            _context.Add(category);
+            return _context.SaveChanges() > 0;
         }
 
         public ICollection<Category> GetCategories()

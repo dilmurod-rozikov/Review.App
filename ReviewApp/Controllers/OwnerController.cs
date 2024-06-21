@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
+using ReviewApp.Repository;
 
 namespace ReviewApp.Controllers
 {
@@ -11,12 +13,15 @@ namespace ReviewApp.Controllers
     public class OwnerController : Controller
     {
         private readonly IOwnerRepository _ownerRepository;
+        private readonly ICountryRepository _countryRepository;
         private readonly IMapper _mapper;
 
-        public OwnerController(IOwnerRepository ownerRepository, IMapper mapper)
+        public OwnerController(IOwnerRepository ownerRepository,
+            ICountryRepository countryRepository, IMapper mapper)
         {
             _mapper = mapper;
             _ownerRepository = ownerRepository;
+            _countryRepository = countryRepository;
         }
 
         [HttpGet]
@@ -67,6 +72,51 @@ namespace ReviewApp.Controllers
                 return BadRequest(ModelState);
 
             return Ok(owner);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateOwner([FromQuery] int countryId, [FromBody] OwnerDTO owner)
+        {
+            if (owner == null)
+                return BadRequest(ModelState);
+
+            var ownerExists = _ownerRepository.GetOwners()
+                .FirstOrDefault(x => x.Name.Trim().Equals(owner.Name.Trim(), StringComparison.CurrentCultureIgnoreCase));
+
+            if (ownerExists != null)
+            {
+                ModelState.AddModelError("", "Owner already exists.");
+                return StatusCode(422, ModelState);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var ownerMap = _mapper.Map<Owner>(owner);
+            ownerMap.Country = _countryRepository.GetCountry(countryId);
+
+            try
+            {
+                if (!_ownerRepository.CreateOwner(ownerMap))
+                {
+                    ModelState.AddModelError("", "Something went wrong while saving.");
+                    return StatusCode(500, ModelState);
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                ModelState.AddModelError("", $"Database Update Exception: {ex.InnerException?.Message ?? ex.Message}");
+                return StatusCode(500, ModelState);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"An error occurred: {ex.Message}");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Successfully created....");
         }
     }
 }

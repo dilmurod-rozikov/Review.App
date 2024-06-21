@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
+using ReviewApp.Repository;
 
 namespace ReviewApp.Controllers
 {
@@ -28,6 +29,36 @@ namespace ReviewApp.Controllers
                 return BadRequest();
 
             return Ok(countries);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateCategory([FromBody] CountryDTO country)
+        {
+            if (country == null)
+                return BadRequest(ModelState);
+
+            var countryExists = _countryRepositry.GetCountryList()
+                .FirstOrDefault(x => x.Name.Trim().Equals(country.Name.Trim(), StringComparison.CurrentCultureIgnoreCase));
+
+            if (countryExists != null)
+            {
+                ModelState.AddModelError("", "Country already exists.");
+                return StatusCode(422, ModelState);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var countryMap = _mapper.Map<Country>(country);
+            if (!_countryRepositry.CreateCountry(countryMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving.");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Successfully created....");
         }
 
         [HttpGet("{countryId}")]

@@ -11,5 +11,7 @@ namespace ReviewApp.Interfaces
         ICollection<Review> GetReviewsOfAPokemon(int pokemonId);
 
         bool ReviewExists(int id);
+
+        bool CreateReview(Review review);
     }
 }
