@@ -48,5 +48,11 @@ namespace ReviewApp.Repository
             _context.Update(owner);
             return _context.SaveChanges() > 0;
         }
+
+        public bool DeleteOwner(Owner owner)
+        {
+            _context.Remove(owner);
+            return _context.SaveChanges() > 0;
+        }
     }
 }

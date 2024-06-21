@@ -18,6 +18,12 @@ namespace ReviewApp.Repository
             return _context.SaveChanges() > 0;
         }
 
+        public bool DeleteReviewer(Reviewer reviewer)
+        {
+            _context.Remove(reviewer);
+            return _context.SaveChanges() > 0;
+        }
+
         public ICollection<Reviewer> GetAll()
         {
             return _context.Reviewers.ToList();
