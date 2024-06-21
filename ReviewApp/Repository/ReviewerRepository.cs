@@ -37,5 +37,11 @@ namespace ReviewApp.Repository
         {
             return _context.Reviewers.Any(x => x.Id == reviewerId);
         }
+
+        public bool UpdateReviewer(Reviewer reviewer)
+        {
+            _context.Update(reviewer);
+            return _context.SaveChanges() > 0;
+        }
     }
 }

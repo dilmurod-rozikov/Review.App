@@ -13,5 +13,7 @@ namespace ReviewApp.Interfaces
         bool ReviewExists(int id);
 
         bool CreateReview(Review review);
+
+        bool UpdateReview(Review review);
     }
 }

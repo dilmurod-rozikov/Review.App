@@ -2,9 +2,9 @@
 
 namespace ReviewApp.Interfaces
 {
-    public interface ICountryRepositry
+    public interface ICountryRepository
     {
-        ICollection<Country> GetCountryList();
+        ICollection<Country> GetCountries();
 
         Country? GetCountry(int id);
 
@@ -15,5 +15,7 @@ namespace ReviewApp.Interfaces
         bool CountryExists(int id);
 
         bool CreateCountry(Country country);
+
+        bool UpdateCountry(Country country);
     }
 }

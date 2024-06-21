@@ -4,11 +4,11 @@ using ReviewApp.Models;
 
 namespace ReviewApp.Repository
 {
-    public class ICountryRepository : ICountryRepositry
+    public class CountryRepository : ICountryRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public ICountryRepository(ApplicationDbContext context)
+        public CountryRepository(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -33,7 +33,7 @@ namespace ReviewApp.Repository
             return _context.Owners.Where(o => o.Id == id).Select(c => c.Country).FirstOrDefault();
         }
 
-        public ICollection<Country> GetCountryList()
+        public ICollection<Country> GetCountries()
         {
             return _context.Countries.ToList();
         }
@@ -41,6 +41,12 @@ namespace ReviewApp.Repository
         public ICollection<Owner> GetOwnerListFromACountry(int countryId)
         {
             return _context.Owners.Where(o => o.Country.Id == countryId).ToList();
+        }
+
+        public bool UpdateCountry(Country country)
+        {
+            _context.Update(country);
+            return _context.SaveChanges() > 0;
         }
     }
 }

@@ -11,9 +11,9 @@ namespace ReviewApp.Controllers
     [ApiController]
     public class CountryController : Controller
     {
-        private readonly ICountryRepositry _countryRepositry;
+        private readonly ICountryRepository _countryRepositry;
         private readonly IMapper _mapper;
-        public CountryController(ICountryRepositry countryRepositry, IMapper mapper)
+        public CountryController(ICountryRepository countryRepositry, IMapper mapper)
         {
             _mapper = mapper;
             _countryRepositry = countryRepositry;
@@ -24,7 +24,7 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetCountries()
         {
-            var countries = _mapper.Map<List<CountryDTO>>(_countryRepositry.GetCountryList());
+            var countries = _mapper.Map<List<CountryDTO>>(_countryRepositry.GetCountries());
             if (!ModelState.IsValid)
                 return BadRequest();
 
@@ -39,7 +39,7 @@ namespace ReviewApp.Controllers
             if (country == null)
                 return BadRequest(ModelState);
 
-            var countryExists = _countryRepositry.GetCountryList()
+            var countryExists = _countryRepositry.GetCountries()
                 .FirstOrDefault(x => x.Name.Trim().Equals(country.Name.Trim(), StringComparison.CurrentCultureIgnoreCase));
 
             if (countryExists != null)
@@ -89,6 +89,35 @@ namespace ReviewApp.Controllers
                 return BadRequest(ModelState);
 
             return Ok(country);
+        }
+
+        [HttpPut("{countryId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateCountry(int countryId, [FromBody] CountryDTO country)
+        {
+            if (country is null)
+                return BadRequest(ModelState);
+
+            if (countryId != country.Id)
+                return BadRequest(ModelState);
+
+            if (!_countryRepositry.CountryExists(countryId))
+                return NotFound(ModelState);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var countryMap = _mapper.Map<Country>(country);
+
+            if (!_countryRepositry.UpdateCountry(countryMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while updating");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
         }
     }
 }

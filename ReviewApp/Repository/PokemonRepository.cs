@@ -63,5 +63,11 @@ namespace ReviewApp.Repository
         {
             return _context.Pokemons.Any(p => p.Id == id);
         }
+
+        public bool UpdatePokemon(int ownerId, int categoryId, Pokemon pokemon)
+        {
+            _context.Update(pokemon);
+            return _context.SaveChanges() > 0;
+        }
     }
 }
