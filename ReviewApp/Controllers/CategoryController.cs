@@ -34,7 +34,7 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(200, Type = typeof(Pokemon))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult GetPokemon(int categoryId)
+        public IActionResult GetCategory(int categoryId)
         {
             if (!_categoryRepositry.CategoryExists(categoryId))
                 return NotFound();
@@ -52,6 +52,9 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetPokemonsByCategory(int categoryId)
         {
+            if (!_categoryRepositry.CategoryExists(categoryId))
+                return NotFound();
+
             var pokemons = _mapper.Map<List<PokemonDTO>>(_categoryRepositry.GetPokemonsByCategory(categoryId));
 
             if (!ModelState.IsValid)
@@ -65,11 +68,11 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateCategory([FromBody] CategoryDTO category)
         {
-            if (category == null)
+            if (category is null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var categoryExists = _categoryRepositry.GetCategories()
-                .Where(x => x.Name.Trim().ToLower() == category.Name.Trim().ToLower())
+                .Where(x => x.Name.Trim().Equals(category.Name.Trim(), StringComparison.CurrentCultureIgnoreCase))
                 .FirstOrDefault();
 
             if (categoryExists != null)
@@ -77,9 +80,6 @@ namespace ReviewApp.Controllers
                 ModelState.AddModelError("", "Category already exists.");
                 return StatusCode(422, ModelState);
             }
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             var categoryMap = _mapper.Map<Category>(category);
             if (!_categoryRepositry.CreateCategory(categoryMap))
@@ -97,20 +97,16 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateCategory(int categoryId, [FromBody] CategoryDTO category)
         {
-            if (category is null)
+            if (category is null || categoryId != category.Id)
                 return BadRequest(ModelState);
-
-            if (categoryId != category.Id)
-                return BadRequest(ModelState);
-
-            if (!_categoryRepositry.CategoryExists(categoryId))
-                return NotFound(ModelState);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            
+            if (!_categoryRepositry.CategoryExists(categoryId))
+                return NotFound(ModelState);
 
             var categoryMap = _mapper.Map<Category>(category);
-
             if(!_categoryRepositry.UpdateCategory(categoryMap))
             {
                 ModelState.AddModelError("", "Something went wrong while updating");

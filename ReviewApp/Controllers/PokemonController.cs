@@ -50,23 +50,6 @@ namespace ReviewApp.Controllers
             return Ok(pokemon);
         }
 
-        [HttpGet("{id}/rating")]
-        [ProducesResponseType(200, Type = typeof(decimal))]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        public IActionResult GetPokemonRating(int id)
-        {
-            if (!_pokemonRepository.PokemonExists(id))
-                return NotFound();
-
-            var rating = _pokemonRepository.GetPokemonRating(id);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            return Ok(rating);
-        }
-
         [HttpPost]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
@@ -147,6 +130,23 @@ namespace ReviewApp.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpGet("{id}/rating")]
+        [ProducesResponseType(200, Type = typeof(decimal))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult GetPokemonRating(int id)
+        {
+            if (!_pokemonRepository.PokemonExists(id))
+                return NotFound();
+
+            var rating = _pokemonRepository.GetPokemonRating(id);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            return Ok(rating);
         }
     }
 }
