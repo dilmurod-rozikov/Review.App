@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
-using ReviewApp.Repository;
 
 namespace ReviewApp.Controllers
 {
@@ -12,11 +11,16 @@ namespace ReviewApp.Controllers
     public class CountryController : Controller
     {
         private readonly ICountryRepository _countryRepositry;
+        private readonly IOwnerRepository _ownerRepository;
         private readonly IMapper _mapper;
-        public CountryController(ICountryRepository countryRepositry, IMapper mapper)
+        public CountryController(
+            ICountryRepository countryRepositry,
+            IOwnerRepository ownerRepository,
+            IMapper mapper)
         {
-            _mapper = mapper;
             _countryRepositry = countryRepositry;
+            _ownerRepository = ownerRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -29,36 +33,6 @@ namespace ReviewApp.Controllers
                 return BadRequest();
 
             return Ok(countries);
-        }
-
-        [HttpPost]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        public IActionResult CreateCategory([FromBody] CountryDTO country)
-        {
-            if (country == null)
-                return BadRequest(ModelState);
-
-            var countryExists = _countryRepositry.GetCountries()
-                .FirstOrDefault(x => x.Name.Trim().Equals(country.Name.Trim(), StringComparison.CurrentCultureIgnoreCase));
-
-            if (countryExists != null)
-            {
-                ModelState.AddModelError("", "Country already exists.");
-                return StatusCode(422, ModelState);
-            }
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var countryMap = _mapper.Map<Country>(country);
-            if (!_countryRepositry.CreateCountry(countryMap))
-            {
-                ModelState.AddModelError("", "Something went wrong while saving.");
-                return StatusCode(500, ModelState);
-            }
-
-            return Ok("Successfully created....");
         }
 
         [HttpGet("{countryId}")]
@@ -83,6 +57,9 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetCountryOfAnOwner(int ownerId)
         {
+            if (!_ownerRepository.OwnerExists(ownerId))
+                return NotFound();
+
             var country = _mapper.Map<CountryDTO>(_countryRepositry.GetCountryByOwner(ownerId));
 
             if (!ModelState.IsValid)
@@ -91,13 +68,43 @@ namespace ReviewApp.Controllers
             return Ok(country);
         }
 
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateCountry([FromBody] CountryDTO country)
+        {
+            if (country is null)
+                return BadRequest(ModelState);
+
+            var countryExists = _countryRepositry.GetCountries()
+                .FirstOrDefault(x => x.Name.Trim().Equals(country.Name.Trim(), StringComparison.CurrentCultureIgnoreCase));
+
+            if (countryExists is not null)
+            {
+                ModelState.AddModelError("", "Country already exists.");
+                return StatusCode(422, ModelState);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var countryMap = _mapper.Map<Country>(country);
+            if (!_countryRepositry.CreateCountry(countryMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while saving.");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Successfully created....");
+        }
+
         [HttpPut("{countryId}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult UpdateCountry(int countryId, [FromBody] CountryDTO country)
         {
-            if (country is null)
+            if (country is null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
             if (countryId != country.Id)
@@ -105,9 +112,6 @@ namespace ReviewApp.Controllers
 
             if (!_countryRepositry.CountryExists(countryId))
                 return NotFound(ModelState);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             var countryMap = _mapper.Map<Country>(country);
 

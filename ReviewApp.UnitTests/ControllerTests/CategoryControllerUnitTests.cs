@@ -48,6 +48,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.Equal(JsonSerializer.Serialize(categoryDTOs), JsonSerializer.Serialize(actualCategories));
             _categoryRepositry.Verify(x => x.GetCategories(), Times.Once);
+            _mapper.Verify(x => x.Map<List<CategoryDTO>>(It.IsAny<IEnumerable<Category>>()), Times.Once);
         }
 
         [Fact]
@@ -70,6 +71,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.False(_controller.ModelState.IsValid);
             _categoryRepositry.Verify(x => x.GetCategories(), Times.Once);
+            _mapper.Verify(x => x.Map<List<CategoryDTO>>(It.IsAny<IEnumerable<Category>>()), Times.Once);
         }
         #endregion
 
@@ -94,6 +96,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             Assert.Equal(JsonSerializer.Serialize(categoryDTO), JsonSerializer.Serialize(actual));
             _categoryRepositry.Verify(x => x.GetCategory(categoryDTO.Id), Times.Once);
             _categoryRepositry.Verify(x => x.CategoryExists(categoryDTO.Id), Times.Once);
+            _mapper.Verify(x => x.Map<CategoryDTO>(It.IsAny<Category>()), Times.Once);
         }
 
         [Fact]
@@ -130,6 +133,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             Assert.False(_controller.ModelState.IsValid);
             _categoryRepositry.Verify(x => x.GetCategory(categoryDTO.Id), Times.Once);
             _categoryRepositry.Verify(x => x.CategoryExists(categoryDTO.Id), Times.Once);
+            _mapper.Verify(x => x.Map<CategoryDTO>(It.IsAny<Category>()), Times.Once);
         }
         #endregion
 
@@ -157,6 +161,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             Assert.Equal(JsonSerializer.Serialize(pokemons), JsonSerializer.Serialize(actual));
             _categoryRepositry.Verify(x => x.GetPokemonsByCategory(categoryDTO.Id), Times.Once);
             _categoryRepositry.Verify(x => x.CategoryExists(categoryDTO.Id), Times.Once);
+            _mapper.Verify(x => x.Map<List<PokemonDTO>>(It.IsAny<IEnumerable<Pokemon>>()), Times.Once);
         }
 
         [Fact]
@@ -197,6 +202,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             Assert.False(_controller.ModelState.IsValid);
             _categoryRepositry.Verify(x => x.GetPokemonsByCategory(categoryDTO.Id), Times.Once);
             _categoryRepositry.Verify(x => x.CategoryExists(categoryDTO.Id), Times.Once);
+            _mapper.Verify(x => x.Map<List<PokemonDTO>>(It.IsAny<IEnumerable<Pokemon>>()), Times.Once);
         }
         #endregion
 
@@ -205,10 +211,10 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenCategory_WhenCreateCategoryIsCalled_ThenReturnsOk()
         {
             //Arrange
-            var category = new Category { Id = 1, Name = "New Category" };
-            _categoryRepositry.Setup(x => x.GetCategories()).Returns([category]);
-            _mapper.Setup(mapper => mapper.Map<CategoryDTO>(It.IsAny<Category>()))
-                .Returns(categoryDTO);
+            List<Category> categories = [new Category() { Id = 1, Name = "Test 2" }];
+            _categoryRepositry.Setup(x => x.GetCategories()).Returns(categories);
+            _mapper.Setup(mapper => mapper.Map<Category>(It.IsAny<CategoryDTO>()))
+                .Returns(It.IsAny<Category>);
             _categoryRepositry.Setup(x => x.CreateCategory(It.IsAny<Category>())).Returns(true);
 
             //Act
@@ -219,6 +225,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             Assert.NotNull(result);
             _categoryRepositry.Verify(x => x.GetCategories(), Times.Once);
             _categoryRepositry.Verify(x => x.CreateCategory(It.IsAny<Category>()), Times.Once);
+            _mapper.Verify(x => x.Map<Category>(It.IsAny<CategoryDTO>()), Times.Once);
         }
 
         [Fact]
@@ -253,8 +260,8 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenCategory_WhenCreateCategoryIsCalled_ThenReturnsModelErrorWhenCategoryAlreadyExists()
         {
             //Arrange
-            var category = new Category { Id = 2, Name = "Test" };
-            _categoryRepositry.Setup(x => x.GetCategories()).Returns([category]);
+            List<Category> categories = [new Category() { Id = 1, Name = "Test" }];
+            _categoryRepositry.Setup(x => x.GetCategories()).Returns(categories);
 
             //Act
             var result = _controller.CreateCategory(categoryDTO);
@@ -271,10 +278,10 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenCategory_WhenCreateCategoryIsCalled_ThenReturnsServerError()
         {
             //Arrange
-            var category = new Category { Id = 2, Name = "new Category" };
-            _categoryRepositry.Setup(x => x.GetCategories()).Returns([category]);
-            _mapper.Setup(mapper => mapper.Map<CategoryDTO>(It.IsAny<Category>()))
-                .Returns(categoryDTO);
+            List<Category> categories = [new Category() { Id = 1, Name = "Test 2" }];
+            _categoryRepositry.Setup(x => x.GetCategories()).Returns(categories);
+            _mapper.Setup(mapper => mapper.Map<Category>(It.IsAny<CategoryDTO>()))
+                .Returns(It.IsAny<Category>);
             _categoryRepositry.Setup(x => x.CreateCategory(It.IsAny<Category>())).Returns(false);
 
             //Act
@@ -287,6 +294,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             Assert.False(_controller.ModelState.IsValid);
             _categoryRepositry.Verify(x => x.GetCategories(), Times.Once);
             _categoryRepositry.Verify(x => x.CreateCategory(It.IsAny<Category>()), Times.Once);
+            _mapper.Verify(x => x.Map<Category>(It.IsAny<CategoryDTO>()), Times.Once);
         }
         #endregion
 
@@ -297,8 +305,8 @@ namespace ReviewApp.UnitTests.ControllerTests
             //Arrange
             var category = new Category { Id = 1, Name = "New Category" };
             _categoryRepositry.Setup(x => x.CategoryExists(category.Id)).Returns(true);
-            _mapper.Setup(mapper => mapper.Map<CategoryDTO>(It.IsAny<Category>()))
-                .Returns(categoryDTO);
+            _mapper.Setup(mapper => mapper.Map<Category>(It.IsAny<CategoryDTO>()))
+                .Returns(It.IsAny<Category>());
             _categoryRepositry.Setup(x => x.UpdateCategory(It.IsAny<Category>()))
                 .Returns(true);
 
@@ -310,6 +318,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             Assert.NotNull(result);
             _categoryRepositry.Verify(x => x.CategoryExists(category.Id), Times.Once);
             _categoryRepositry.Verify(x => x.UpdateCategory(It.IsAny<Category>()), Times.Once);
+            _mapper.Verify(x => x.Map<Category>(It.IsAny<CategoryDTO>()), Times.Once);
         }
 
         [Fact]
@@ -363,8 +372,8 @@ namespace ReviewApp.UnitTests.ControllerTests
             //Arrange
             var category = new Category { Id = categoryDTO.Id, Name = "new Category" };
             _categoryRepositry.Setup(x => x.CategoryExists(category.Id)).Returns(true);
-            _mapper.Setup(mapper => mapper.Map<CategoryDTO>(It.IsAny<Category>()))
-                .Returns(categoryDTO);
+            _mapper.Setup(mapper => mapper.Map<Category>(It.IsAny<CategoryDTO>()))
+                .Returns(It.IsAny<Category>());
             _categoryRepositry.Setup(x => x.UpdateCategory(It.IsAny<Category>())).Returns(false);
 
             //Act
@@ -376,6 +385,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             Assert.Equal(500, model.StatusCode);
             _categoryRepositry.Verify(x => x.CategoryExists(category.Id), Times.Once);
             _categoryRepositry.Verify(x => x.UpdateCategory(It.IsAny<Category>()), Times.Once);
+            _mapper.Verify(x => x.Map<Category>(It.IsAny<CategoryDTO>()), Times.Once);
         }
         #endregion
 
@@ -384,83 +394,78 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenId_WhenDeleteCategoryIsCalled_ThenReturnsNoContent()
         {
             //Arrange
-            var category = new Category { Id = 1, Name = "New Category" };
 
-            _categoryRepositry.Setup(x => x.CategoryExists(category.Id)).Returns(true);
-            _categoryRepositry.Setup(x => x.GetCategory(1)).Returns(category);
+            _categoryRepositry.Setup(x => x.CategoryExists(It.IsAny<int>())).Returns(true);
+            _categoryRepositry.Setup(x => x.GetCategory(It.IsAny<int>())).Returns(It.IsAny<Category>());
 
             //Act
-            var result = _controller.DeleteCategory(category.Id);
+            var result = _controller.DeleteCategory(It.IsAny<int>());
 
             //Assert
             var model = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, model.StatusCode);
             Assert.NotNull(result);
             Assert.IsAssignableFrom<ObjectResult>(result);
-            _categoryRepositry.Verify(x => x.CategoryExists(category.Id), Times.Once);
-            _categoryRepositry.Verify(x => x.GetCategory(1), Times.Once);
+            _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
+            _categoryRepositry.Verify(x => x.GetCategory(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
         public void GivenId_WhenDeleteCategoryIsCalled_ThenReturnsNotFound()
         {
             //Arrange
-            _categoryRepositry.Setup(x => x.CategoryExists(1)).Returns(false);
+            _categoryRepositry.Setup(x => x.CategoryExists(It.IsAny<int>())).Returns(false);
 
             //Act
-            var result = _controller.DeleteCategory(1);
+            var result = _controller.DeleteCategory(It.IsAny<int>());
 
             //Assert
             var model = Assert.IsType<NotFoundResult>(result);
             Assert.Equal(404, model.StatusCode);
             Assert.NotNull(result);
             Assert.IsAssignableFrom<NotFoundResult>(result);
-            _categoryRepositry.Verify(x => x.CategoryExists(1), Times.Once);
+            _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
         public void GivenId_WhenDeleteCategoryIsCalled_ThenReturnsModelError()
         {
             //Arrange
-            var category = new Category { Id = 1, Name = "New Category" };
-
-            _categoryRepositry.Setup(x => x.CategoryExists(category.Id)).Returns(true);
-            _categoryRepositry.Setup(x => x.GetCategory(category.Id)).Returns(category);
+            _categoryRepositry.Setup(x => x.CategoryExists(It.IsAny<int>())).Returns(true);
+            _categoryRepositry.Setup(x => x.GetCategory(It.IsAny<int>())).Returns(It.IsAny<Category>());
             _controller.ModelState.AddModelError("", "Something wrong with the model");
 
             //Act
-            var result = _controller.DeleteCategory(category.Id);
+            var result = _controller.DeleteCategory(It.IsAny<int>());
 
             //Assert
             var model = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, model.StatusCode);
             Assert.NotNull(result);
             Assert.False(_controller.ModelState.IsValid);
-            _categoryRepositry.Verify(x => x.CategoryExists(category.Id), Times.Once);
-            _categoryRepositry.Verify(x => x.GetCategory(category.Id), Times.Once);
+            _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
+            _categoryRepositry.Verify(x => x.GetCategory(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
         public void GivenId_WhenDeleteCategoryIsCalled_ThenReturnsModelErrorWhenDeleteFails()
         {
             //Arrange
-            var category = new Category { Id = 1, Name = "New Category" };
-
-            _categoryRepositry.Setup(x => x.CategoryExists(category.Id)).Returns(true);
-            _categoryRepositry.Setup(x => x.GetCategory(category.Id)).Returns(category);
-            _categoryRepositry.Setup(x => x.DeleteCategory(category)).Returns(false);
+            _categoryRepositry.Setup(x => x.CategoryExists(It.IsAny<int>())).Returns(true);
+            _categoryRepositry.Setup(x => x.GetCategory(It.IsAny<int>())).Returns(It.IsAny<Category>());
+            _categoryRepositry.Setup(x => x.DeleteCategory(It.IsAny<Category>())).Returns(false);
 
             //Act
-            var result = _controller.DeleteCategory(category.Id);
+            var result = _controller.DeleteCategory(It.IsAny<int>());
 
             //Assert
             var model = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, model.StatusCode);
             Assert.NotNull(result);
             Assert.False(_controller.ModelState.IsValid);
-            _categoryRepositry.Verify(x => x.CategoryExists(category.Id), Times.Once);
-            _categoryRepositry.Verify(x => x.GetCategory(category.Id), Times.Once);
-            _categoryRepositry.Verify(x => x.DeleteCategory(category), Times.Once);
+            _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
+            _categoryRepositry.Verify(x => x.GetCategory(It.IsAny<int>()), Times.Once);
+            _categoryRepositry.Verify(x => x.DeleteCategory(It.IsAny<Category>()), Times.Once);
         }
         #endregion
     }
