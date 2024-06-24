@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
-using ReviewApp.Repository;
 
 namespace ReviewApp.Controllers
 {
@@ -68,7 +67,7 @@ namespace ReviewApp.Controllers
                 return NotFound();
 
             var owner = _mapper
-                .Map<PokemonDTO>(_ownerRepository.GetPokemonsByOwner(ownerId));
+                .Map<List<PokemonDTO>>(_ownerRepository.GetPokemonsByOwner(ownerId));
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -98,7 +97,6 @@ namespace ReviewApp.Controllers
 
             var ownerMap = _mapper.Map<Owner>(owner);
             ownerMap.Country = _countryRepository.GetCountry(countryId);
-
             try
             {
                 if (!_ownerRepository.CreateOwner(ownerMap))
@@ -127,7 +125,7 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateOwner(int ownerId, [FromBody] OwnerDTO owner)
         {
-            if (owner is null)
+            if (owner is null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
             if (ownerId != owner.Id)
@@ -135,9 +133,6 @@ namespace ReviewApp.Controllers
 
             if (!_ownerRepository.OwnerExists(ownerId))
                 return NotFound(ModelState);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             var ownerMap = _mapper.Map<Owner>(owner);
 
