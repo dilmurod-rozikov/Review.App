@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
@@ -28,9 +29,11 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetCountries()
         {
-            var countries = _mapper.Map<List<CountryDTO>>(_countryRepositry.GetCountries());
             if (!ModelState.IsValid)
                 return BadRequest();
+
+            var countries = _mapper
+                .Map<List<CountryDTO>>(_countryRepositry.GetCountries());
 
             return Ok(countries);
         }
@@ -44,10 +47,11 @@ namespace ReviewApp.Controllers
             if (!_countryRepositry.CountryExists(countryId))
                 return NotFound();
 
-            var country = _mapper.Map<CountryDTO>(_countryRepositry.GetCountry(countryId));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var country = _mapper
+                .Map<CountryDTO>(_countryRepositry.GetCountry(countryId));
 
             return Ok(country);
         }
@@ -60,10 +64,11 @@ namespace ReviewApp.Controllers
             if (!_ownerRepository.OwnerExists(ownerId))
                 return NotFound();
 
-            var country = _mapper.Map<CountryDTO>(_countryRepositry.GetCountryByOwner(ownerId));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var country = _mapper
+                .Map<CountryDTO>(_countryRepositry.GetCountryByOwner(ownerId));
 
             return Ok(country);
         }
@@ -73,7 +78,7 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateCountry([FromBody] CountryDTO country)
         {
-            if (country is null)
+            if (country is null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var countryExists = _countryRepositry.GetCountries()
@@ -85,13 +90,23 @@ namespace ReviewApp.Controllers
                 return StatusCode(422, ModelState);
             }
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var countryMap = _mapper.Map<Country>(country);
-            if (!_countryRepositry.CreateCountry(countryMap))
+            try
             {
-                ModelState.AddModelError("", "Something went wrong while saving.");
+                if (!_countryRepositry.CreateCountry(countryMap))
+                {
+                    ModelState.AddModelError("", "Something went wrong while saving.");
+                    return StatusCode(500, ModelState);
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                ModelState.AddModelError("", $"Database Update Exception: {ex.InnerException?.Message ?? ex.Message}");
+                return StatusCode(500, ModelState);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"An error occurred: {ex.Message}");
                 return StatusCode(500, ModelState);
             }
 
@@ -134,9 +149,6 @@ namespace ReviewApp.Controllers
                 return NotFound();
 
             var countryDelete = _countryRepositry.GetCountry(countryId);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             if (!_countryRepositry.DeleteCountry(countryDelete))
             {

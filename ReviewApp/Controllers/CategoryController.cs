@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
@@ -23,9 +24,10 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetCategories()
         {
-            var categories = _mapper.Map<List<CategoryDTO>>(_categoryRepositry.GetCategories());
             if (!ModelState.IsValid)
                 return BadRequest();
+            var categories = _mapper
+                .Map<List<CategoryDTO>>(_categoryRepositry.GetCategories());
 
             return Ok(categories);
         }
@@ -39,10 +41,11 @@ namespace ReviewApp.Controllers
             if (!_categoryRepositry.CategoryExists(categoryId))
                 return NotFound();
 
-            var category = _mapper.Map<CategoryDTO>(_categoryRepositry.GetCategory(categoryId));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var category = _mapper
+                .Map<CategoryDTO>(_categoryRepositry.GetCategory(categoryId));
 
             return Ok(category);
         }
@@ -55,10 +58,11 @@ namespace ReviewApp.Controllers
             if (!_categoryRepositry.CategoryExists(categoryId))
                 return NotFound();
 
-            var pokemons = _mapper.Map<List<PokemonDTO>>(_categoryRepositry.GetPokemonsByCategory(categoryId));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var pokemons = _mapper
+                .Map<List<PokemonDTO>>(_categoryRepositry.GetPokemonsByCategory(categoryId));
 
             return Ok(pokemons);
         }
@@ -82,9 +86,23 @@ namespace ReviewApp.Controllers
             }
 
             var categoryMap = _mapper.Map<Category>(category);
-            if (!_categoryRepositry.CreateCategory(categoryMap))
+            
+            try
             {
-                ModelState.AddModelError("", "Something went wrong while saving.");
+                if (!_categoryRepositry.CreateCategory(categoryMap))
+                {
+                    ModelState.AddModelError("", "Something went wrong while saving.");
+                    return StatusCode(500, ModelState);
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                ModelState.AddModelError("", $"Database Update Exception: {ex.InnerException?.Message ?? ex.Message}");
+                return StatusCode(500, ModelState);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"An error occurred: {ex.Message}");
                 return StatusCode(500, ModelState);
             }
 
@@ -126,9 +144,6 @@ namespace ReviewApp.Controllers
                 return NotFound();
 
             var categoryDelete = _categoryRepositry.GetCategory(categoryId);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             if (!_categoryRepositry.DeleteCategory(categoryDelete))
             {

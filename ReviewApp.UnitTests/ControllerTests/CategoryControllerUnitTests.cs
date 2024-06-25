@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using ReviewApp.Controllers;
@@ -31,10 +32,11 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenNothing_WhenGetCategoriesIsCalled_ThenReturnListOfCategories()
         {
             //Arrange
-            List<Category> categories = [new() { Id = categoryDTO.Id, Name = categoryDTO.Name }];
+            List<Category> categories = [new()];
             List<CategoryDTO> categoryDTOs = [categoryDTO];
 
-            _categoryRepositry.Setup(x => x.GetCategories()).Returns(categories);
+            _categoryRepositry.Setup(x => x.GetCategories())
+                .Returns(categories);
             _mapper.Setup(mapper => mapper.Map<List<CategoryDTO>>(It.IsAny<IEnumerable<Category>>()))
                 .Returns(categoryDTOs);
 
@@ -43,10 +45,9 @@ namespace ReviewApp.UnitTests.ControllerTests
 
             //Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var actualCategories = Assert.IsType<List<CategoryDTO>>(okResult.Value);
-
-            Assert.NotNull(result);
-            Assert.Equal(JsonSerializer.Serialize(categoryDTOs), JsonSerializer.Serialize(actualCategories));
+            var actual = Assert.IsType<List<CategoryDTO>>(okResult.Value);
+            Assert.Equal(200, okResult.StatusCode);
+            Assert.Equal(JsonSerializer.Serialize(categoryDTOs), JsonSerializer.Serialize(actual));
             _categoryRepositry.Verify(x => x.GetCategories(), Times.Once);
             _mapper.Verify(x => x.Map<List<CategoryDTO>>(It.IsAny<IEnumerable<Category>>()), Times.Once);
         }
@@ -55,23 +56,15 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenNothing_WhenGetCategoriesIsCalled_ThenReturnsBadRequest()
         {
             //Arrange
-            List<Category> categories = [new() { Id = categoryDTO.Id, Name = categoryDTO.Name }];
-            List<CategoryDTO> categoryDTOs = [categoryDTO];
-
-            _categoryRepositry.Setup(x => x.GetCategories()).Returns(categories);
-            _mapper.Setup(mapper => mapper.Map<List<CategoryDTO>>(It.IsAny<IEnumerable<Category>>()))
-                .Returns(categoryDTOs);
             _controller.ModelState.AddModelError("", "Model is not valid");
 
             //Act
             var result = _controller.GetCategories();
 
             //Assert
-            var okResult = Assert.IsType<BadRequestResult>(result);
-            Assert.NotNull(result);
+            var badRequestResult = Assert.IsType<BadRequestResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
             Assert.False(_controller.ModelState.IsValid);
-            _categoryRepositry.Verify(x => x.GetCategories(), Times.Once);
-            _mapper.Verify(x => x.Map<List<CategoryDTO>>(It.IsAny<IEnumerable<Category>>()), Times.Once);
         }
         #endregion
 
@@ -80,22 +73,23 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenCategoryId_WhenGetCategoryIsCalled_ThenReturnsCategory()
         {
             //Arrange
-            _categoryRepositry.Setup(x => x.CategoryExists(categoryDTO.Id)).Returns(true);
-            _categoryRepositry.Setup(x => x.GetCategory(categoryDTO.Id)).Returns(It.IsAny<Category>());
+            _categoryRepositry.Setup(x => x.CategoryExists(It.IsAny<int>()))
+                .Returns(true);
+            _categoryRepositry.Setup(x => x.GetCategory(It.IsAny<int>()))
+                .Returns(new Category());
             _mapper.Setup(mapper => mapper.Map<CategoryDTO>(It.IsAny<Category>()))
                 .Returns(categoryDTO);
 
             //Act
-            var result = _controller.GetCategory(categoryDTO.Id);
+            var result = _controller.GetCategory(It.IsAny<int>());
 
             //Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var actual = Assert.IsType<CategoryDTO>(okResult.Value);
-
-            Assert.NotNull(result);
+            Assert.Equal(okResult.StatusCode, 200);
             Assert.Equal(JsonSerializer.Serialize(categoryDTO), JsonSerializer.Serialize(actual));
-            _categoryRepositry.Verify(x => x.GetCategory(categoryDTO.Id), Times.Once);
-            _categoryRepositry.Verify(x => x.CategoryExists(categoryDTO.Id), Times.Once);
+            _categoryRepositry.Verify(x => x.GetCategory(It.IsAny<int>()), Times.Once);
+            _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
             _mapper.Verify(x => x.Map<CategoryDTO>(It.IsAny<Category>()), Times.Once);
         }
 
@@ -103,37 +97,33 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenCategoryId_WhenGetCategoryIsCalled_ThenReturnsNotFound()
         {
             //Arrange
-            _categoryRepositry.Setup(x => x.CategoryExists(categoryDTO.Id)).Returns(false);
+            _categoryRepositry.Setup(x => x.CategoryExists(It.IsAny<int>())).Returns(false);
 
             //Act
-            var result = _controller.GetCategory(categoryDTO.Id);
+            var result = _controller.GetCategory(It.IsAny<int>());
 
             //Assert
-            Assert.IsType<NotFoundResult>(result);
-            Assert.NotNull(result);
-            _categoryRepositry.Verify(x => x.CategoryExists(categoryDTO.Id), Times.Once);
+            var notFoundResult = Assert.IsType<NotFoundResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
         public void GivenCategoryId_WhenGetCategoryIsCalled_ThenReturnsBadRequest()
         {
             //Arrange
-            _categoryRepositry.Setup(x => x.CategoryExists(categoryDTO.Id)).Returns(true);
-            _categoryRepositry.Setup(x => x.GetCategory(categoryDTO.Id)).Returns(It.IsAny<Category>());
-            _mapper.Setup(mapper => mapper.Map<CategoryDTO>(It.IsAny<Category>()))
-                .Returns(categoryDTO);
+            _categoryRepositry.Setup(x => x.CategoryExists(It.IsAny<int>()))
+                .Returns(true);
             _controller.ModelState.AddModelError("", "Model state is invalid.");
 
             //Act
-            var result = _controller.GetCategory(categoryDTO.Id);
+            var result = _controller.GetCategory(It.IsAny<int>());
 
             //Assert
-            var okResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.NotNull(result);
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(badRequestObjectResult.StatusCode, 400);
             Assert.False(_controller.ModelState.IsValid);
-            _categoryRepositry.Verify(x => x.GetCategory(categoryDTO.Id), Times.Once);
-            _categoryRepositry.Verify(x => x.CategoryExists(categoryDTO.Id), Times.Once);
-            _mapper.Verify(x => x.Map<CategoryDTO>(It.IsAny<Category>()), Times.Once);
+            _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
         }
         #endregion
 
@@ -144,23 +134,22 @@ namespace ReviewApp.UnitTests.ControllerTests
             //Arrange
             List<PokemonDTO> pokemons = [new() { }];
 
-            _categoryRepositry.Setup(x => x.CategoryExists(categoryDTO.Id)).Returns(true);
-            _categoryRepositry.Setup(x => x.GetPokemonsByCategory(categoryDTO.Id))
+            _categoryRepositry.Setup(x => x.CategoryExists(It.IsAny<int>())).Returns(true);
+            _categoryRepositry.Setup(x => x.GetPokemonsByCategory(It.IsAny<int>()))
                 .Returns(It.IsAny<List<Pokemon>>());
             _mapper.Setup(mapper => mapper.Map<List<PokemonDTO>>(It.IsAny<IEnumerable<Pokemon>>()))
                 .Returns(pokemons);
 
             //Act
-            var result = _controller.GetPokemonsByCategory(categoryDTO.Id);
+            var result = _controller.GetPokemonsByCategory(It.IsAny<int>());
 
             //Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(200, okResult.StatusCode);
             var actual = Assert.IsType<List<PokemonDTO>>(okResult.Value);
-
-            Assert.NotNull(result);
             Assert.Equal(JsonSerializer.Serialize(pokemons), JsonSerializer.Serialize(actual));
-            _categoryRepositry.Verify(x => x.GetPokemonsByCategory(categoryDTO.Id), Times.Once);
-            _categoryRepositry.Verify(x => x.CategoryExists(categoryDTO.Id), Times.Once);
+            _categoryRepositry.Verify(x => x.GetPokemonsByCategory(It.IsAny<int>()), Times.Once);
+            _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
             _mapper.Verify(x => x.Map<List<PokemonDTO>>(It.IsAny<IEnumerable<Pokemon>>()), Times.Once);
         }
 
@@ -168,41 +157,33 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenCategoryId_WhenGetPokemonsByCategoryIsCalled_ThenReturnsNotFound()
         {
             //Arrange
-            _categoryRepositry.Setup(x => x.CategoryExists(categoryDTO.Id)).Returns(false);
+            _categoryRepositry.Setup(x => x.CategoryExists(It.IsAny<int>())).Returns(false);
 
             //Act
-            var result = _controller.GetPokemonsByCategory(categoryDTO.Id);
+            var result = _controller.GetPokemonsByCategory(It.IsAny<int>());
 
             //Assert
-            Assert.IsType<NotFoundResult>(result);
-            Assert.NotNull(result);
-            _categoryRepositry.Verify(x => x.CategoryExists(categoryDTO.Id), Times.Once);
+            var notFoundResult = Assert.IsType<NotFoundResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+            _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
         public void GivenCategoryId_WhenGetPokemonsByCategoryIsCalled_ThenReturnsBadRequest()
         {
             //Arrange
-            List<PokemonDTO> pokemons = [new() { }];
-
-            _categoryRepositry.Setup(x => x.CategoryExists(categoryDTO.Id)).Returns(true);
-            _categoryRepositry.Setup(x => x.GetPokemonsByCategory(categoryDTO.Id))
-
-                .Returns(It.IsAny<List<Pokemon>>());
-            _mapper.Setup(mapper => mapper.Map<List<PokemonDTO>>(It.IsAny<IEnumerable<Pokemon>>()))
-                .Returns(pokemons);
+            _categoryRepositry.Setup(x => x.CategoryExists(It.IsAny<int>()))
+                .Returns(true);
             _controller.ModelState.AddModelError("", "Model state is invalid.");
 
             //Act
-            var result = _controller.GetPokemonsByCategory(categoryDTO.Id);
+            var result = _controller.GetPokemonsByCategory(It.IsAny<int>());
 
             //Assert
-            var okResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.NotNull(result);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
             Assert.False(_controller.ModelState.IsValid);
-            _categoryRepositry.Verify(x => x.GetPokemonsByCategory(categoryDTO.Id), Times.Once);
-            _categoryRepositry.Verify(x => x.CategoryExists(categoryDTO.Id), Times.Once);
-            _mapper.Verify(x => x.Map<List<PokemonDTO>>(It.IsAny<IEnumerable<Pokemon>>()), Times.Once);
+            _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
         }
         #endregion
 
@@ -211,18 +192,21 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenCategory_WhenCreateCategoryIsCalled_ThenReturnsOk()
         {
             //Arrange
-            List<Category> categories = [new Category() { Id = 1, Name = "Test 2" }];
-            _categoryRepositry.Setup(x => x.GetCategories()).Returns(categories);
+            List<Category> categories = [new() { Id = 1, Name = "Test 2" }];
+
+            _categoryRepositry.Setup(x => x.GetCategories())
+                .Returns(categories);
             _mapper.Setup(mapper => mapper.Map<Category>(It.IsAny<CategoryDTO>()))
                 .Returns(It.IsAny<Category>);
-            _categoryRepositry.Setup(x => x.CreateCategory(It.IsAny<Category>())).Returns(true);
+            _categoryRepositry.Setup(x => x.CreateCategory(It.IsAny<Category>()))
+                .Returns(true);
 
             //Act
             var result = _controller.CreateCategory(categoryDTO);
 
             //Assert
-            Assert.IsType<OkObjectResult>(result);
-            Assert.NotNull(result);
+            var okObjectResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(200, okObjectResult.StatusCode);
             _categoryRepositry.Verify(x => x.GetCategories(), Times.Once);
             _categoryRepositry.Verify(x => x.CreateCategory(It.IsAny<Category>()), Times.Once);
             _mapper.Verify(x => x.Map<Category>(It.IsAny<CategoryDTO>()), Times.Once);
@@ -237,8 +221,8 @@ namespace ReviewApp.UnitTests.ControllerTests
             var result = _controller.CreateCategory(null);
 
             //Assert
-            Assert.IsType<BadRequestObjectResult>(result);
-            Assert.NotNull(result);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
         }
 
         [Fact]
@@ -251,8 +235,8 @@ namespace ReviewApp.UnitTests.ControllerTests
             var result = _controller.CreateCategory(categoryDTO);
 
             //Assert
-            Assert.IsType<BadRequestObjectResult>(result);
-            Assert.NotNull(result);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
             Assert.False(_controller.ModelState.IsValid);
         }
 
@@ -268,7 +252,6 @@ namespace ReviewApp.UnitTests.ControllerTests
 
             //Assert
             var model = Assert.IsType<ObjectResult>(result);
-            Assert.NotNull(result);
             Assert.Equal(422, model.StatusCode);
             Assert.False(_controller.ModelState.IsValid);
             _categoryRepositry.Verify(x => x.GetCategories(), Times.Once);
@@ -288,9 +271,8 @@ namespace ReviewApp.UnitTests.ControllerTests
             var result = _controller.CreateCategory(categoryDTO);
 
             //Assert
-            var model = Assert.IsType<ObjectResult>(result);
-            Assert.NotNull(result);
-            Assert.Equal(500, model.StatusCode);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(500, objectResult.StatusCode);
             Assert.False(_controller.ModelState.IsValid);
             _categoryRepositry.Verify(x => x.GetCategories(), Times.Once);
             _categoryRepositry.Verify(x => x.CreateCategory(It.IsAny<Category>()), Times.Once);
@@ -304,7 +286,8 @@ namespace ReviewApp.UnitTests.ControllerTests
         {
             //Arrange
             var category = new Category { Id = 1, Name = "New Category" };
-            _categoryRepositry.Setup(x => x.CategoryExists(category.Id)).Returns(true);
+            _categoryRepositry.Setup(x => x.CategoryExists(category.Id))
+                .Returns(true);
             _mapper.Setup(mapper => mapper.Map<Category>(It.IsAny<CategoryDTO>()))
                 .Returns(It.IsAny<Category>());
             _categoryRepositry.Setup(x => x.UpdateCategory(It.IsAny<Category>()))
@@ -314,8 +297,8 @@ namespace ReviewApp.UnitTests.ControllerTests
             var result = _controller.UpdateCategory(category.Id, categoryDTO);
 
             //Assert
-            Assert.IsType<NoContentResult>(result);
-            Assert.NotNull(result);
+            var noContent = Assert.IsType<NoContentResult>(result);
+            Assert.Equal(204, noContent.StatusCode);
             _categoryRepositry.Verify(x => x.CategoryExists(category.Id), Times.Once);
             _categoryRepositry.Verify(x => x.UpdateCategory(It.IsAny<Category>()), Times.Once);
             _mapper.Verify(x => x.Map<Category>(It.IsAny<CategoryDTO>()), Times.Once);
@@ -330,8 +313,8 @@ namespace ReviewApp.UnitTests.ControllerTests
             var result = _controller.UpdateCategory(1, null);
 
             //Assert
-            Assert.IsType<BadRequestObjectResult>(result);
-            Assert.NotNull(result);
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestObjectResult.StatusCode);
         }
 
         [Fact]
@@ -344,8 +327,8 @@ namespace ReviewApp.UnitTests.ControllerTests
             var result = _controller.UpdateCategory(1, categoryDTO);
 
             //Assert
-            Assert.IsType<BadRequestObjectResult>(result);
-            Assert.NotNull(result);
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestObjectResult.StatusCode);
             Assert.False(_controller.ModelState.IsValid);
         }
 
@@ -361,7 +344,6 @@ namespace ReviewApp.UnitTests.ControllerTests
 
             //Assert
             var model = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.NotNull(result);
             Assert.Equal(404, model.StatusCode);
             Assert.True(_controller.ModelState.IsValid);
         }
@@ -371,17 +353,18 @@ namespace ReviewApp.UnitTests.ControllerTests
         {
             //Arrange
             var category = new Category { Id = categoryDTO.Id, Name = "new Category" };
-            _categoryRepositry.Setup(x => x.CategoryExists(category.Id)).Returns(true);
+            _categoryRepositry.Setup(x => x.CategoryExists(category.Id))
+                .Returns(true);
             _mapper.Setup(mapper => mapper.Map<Category>(It.IsAny<CategoryDTO>()))
                 .Returns(It.IsAny<Category>());
-            _categoryRepositry.Setup(x => x.UpdateCategory(It.IsAny<Category>())).Returns(false);
+            _categoryRepositry.Setup(x => x.UpdateCategory(It.IsAny<Category>()))
+                .Returns(false);
 
             //Act
             var result = _controller.UpdateCategory(category.Id, categoryDTO);
 
             //Assert
             var model = Assert.IsType<ObjectResult>(result);
-            Assert.NotNull(result);
             Assert.Equal(500, model.StatusCode);
             _categoryRepositry.Verify(x => x.CategoryExists(category.Id), Times.Once);
             _categoryRepositry.Verify(x => x.UpdateCategory(It.IsAny<Category>()), Times.Once);
@@ -394,7 +377,6 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenId_WhenDeleteCategoryIsCalled_ThenReturnsNoContent()
         {
             //Arrange
-
             _categoryRepositry.Setup(x => x.CategoryExists(It.IsAny<int>())).Returns(true);
             _categoryRepositry.Setup(x => x.GetCategory(It.IsAny<int>())).Returns(It.IsAny<Category>());
 
@@ -404,7 +386,6 @@ namespace ReviewApp.UnitTests.ControllerTests
             //Assert
             var model = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, model.StatusCode);
-            Assert.NotNull(result);
             Assert.IsAssignableFrom<ObjectResult>(result);
             _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
             _categoryRepositry.Verify(x => x.GetCategory(It.IsAny<int>()), Times.Once);
@@ -422,29 +403,8 @@ namespace ReviewApp.UnitTests.ControllerTests
             //Assert
             var model = Assert.IsType<NotFoundResult>(result);
             Assert.Equal(404, model.StatusCode);
-            Assert.NotNull(result);
             Assert.IsAssignableFrom<NotFoundResult>(result);
             _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
-        }
-
-        [Fact]
-        public void GivenId_WhenDeleteCategoryIsCalled_ThenReturnsModelError()
-        {
-            //Arrange
-            _categoryRepositry.Setup(x => x.CategoryExists(It.IsAny<int>())).Returns(true);
-            _categoryRepositry.Setup(x => x.GetCategory(It.IsAny<int>())).Returns(It.IsAny<Category>());
-            _controller.ModelState.AddModelError("", "Something wrong with the model");
-
-            //Act
-            var result = _controller.DeleteCategory(It.IsAny<int>());
-
-            //Assert
-            var model = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(400, model.StatusCode);
-            Assert.NotNull(result);
-            Assert.False(_controller.ModelState.IsValid);
-            _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
-            _categoryRepositry.Verify(x => x.GetCategory(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
@@ -461,7 +421,6 @@ namespace ReviewApp.UnitTests.ControllerTests
             //Assert
             var model = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, model.StatusCode);
-            Assert.NotNull(result);
             Assert.False(_controller.ModelState.IsValid);
             _categoryRepositry.Verify(x => x.CategoryExists(It.IsAny<int>()), Times.Once);
             _categoryRepositry.Verify(x => x.GetCategory(It.IsAny<int>()), Times.Once);

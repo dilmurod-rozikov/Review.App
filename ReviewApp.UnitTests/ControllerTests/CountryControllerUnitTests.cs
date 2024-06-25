@@ -33,11 +33,12 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenNothing_WhenGetCountriesIsCalled_ThenReturnListOfCountries()
         {
             //Arrange
-            List<Country> countries = [new() { Id = countryDTO.Id, Name = countryDTO.Name }];
+            List<Country> countries = [new()];
             List<CountryDTO> countryDTOs = [countryDTO];
 
-            _countryRepository.Setup(x => x.GetCountries()).Returns(countries);
-            _mapper.Setup(mapper => mapper.Map<List<CountryDTO>>(It.IsAny<IEnumerable<Country>>()))
+            _countryRepository.Setup(x => x.GetCountries())
+                .Returns(countries);
+            _mapper.Setup(mapper => mapper.Map<List<CountryDTO>>(It.IsAny<List<Country>>()))
                 .Returns(countryDTOs);
 
             //Act
@@ -46,44 +47,37 @@ namespace ReviewApp.UnitTests.ControllerTests
             //Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var actualCategories = Assert.IsType<List<CountryDTO>>(okResult.Value);
-
-            Assert.NotNull(result);
+            Assert.Equal(200, okResult.StatusCode);
             Assert.Equal(JsonSerializer.Serialize(countryDTOs), JsonSerializer.Serialize(actualCategories));
             _countryRepository.Verify(x => x.GetCountries(), Times.Once);
-            _mapper.Verify(x => x.Map<List<CountryDTO>>(It.IsAny<IEnumerable<Country>>()), Times.Once);
+            _mapper.Verify(x => x.Map<List<CountryDTO>>(It.IsAny<List<Country>>()), Times.Once);
         }
 
         [Fact]
-        public void GivenNothing_WhenGetCategoriesIsCalled_ThenReturnsBadRequest()
+        public void GivenNothing_WhenGetCountriesIsCalled_ThenReturnsBadRequest()
         {
             //Arrange
-            List<Country> countries = [new() { Id = countryDTO.Id, Name = countryDTO.Name }];
-            List<CountryDTO> countryDTOs = [countryDTO];
-
-            _countryRepository.Setup(x => x.GetCountries()).Returns(countries);
-            _mapper.Setup(mapper => mapper.Map<List<CountryDTO>>(It.IsAny<IEnumerable<Country>>()))
-                .Returns(countryDTOs);
             _controller.ModelState.AddModelError("", "Model is not valid");
 
             //Act
             var result = _controller.GetCountries();
 
             //Assert
-            var okResult = Assert.IsType<BadRequestResult>(result);
-            Assert.NotNull(result);
+            var badRequestResult = Assert.IsType<BadRequestResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
             Assert.False(_controller.ModelState.IsValid);
-            _countryRepository.Verify(x => x.GetCountries(), Times.Once);
-            _mapper.Verify(x => x.Map<List<CountryDTO>>(It.IsAny<IEnumerable<Country>>()), Times.Once);
         }
         #endregion
 
         #region GetCountry
         [Fact]
-        public void GivenCategoryId_WhenGetCountryIsCalled_ThenReturnsCategory()
+        public void GivenId_WhenGetCountryIsCalled_ThenReturnsCountry()
         {
             //Arrange
-            _countryRepository.Setup(x => x.CountryExists(countryDTO.Id)).Returns(true);
-            _countryRepository.Setup(x => x.GetCountry(countryDTO.Id)).Returns(It.IsAny<Country>());
+            _countryRepository.Setup(x => x.CountryExists(countryDTO.Id))
+                .Returns(true);
+            _countryRepository.Setup(x => x.GetCountry(countryDTO.Id))
+                .Returns(It.IsAny<Country>());
             _mapper.Setup(mapper => mapper.Map<CountryDTO>(It.IsAny<Country>()))
                 .Returns(countryDTO);
 
@@ -93,8 +87,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             //Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var actual = Assert.IsType<CountryDTO>(okResult.Value);
-
-            Assert.NotNull(result);
+            Assert.Equal(200, okResult.StatusCode);
             Assert.Equal(JsonSerializer.Serialize(countryDTO), JsonSerializer.Serialize(actual));
             _countryRepository.Verify(x => x.GetCountry(countryDTO.Id), Times.Once);
             _countryRepository.Verify(x => x.CountryExists(countryDTO.Id), Times.Once);
@@ -102,7 +95,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         }
 
         [Fact]
-        public void GivenCategoryId_WhenGetCountryIsCalled_ThenReturnsNotFound()
+        public void GivenId_WhenGetCountryIsCalled_ThenReturnsNotFound()
         {
             //Arrange
             _countryRepository.Setup(x => x.CountryExists(countryDTO.Id)).Returns(false);
@@ -117,31 +110,27 @@ namespace ReviewApp.UnitTests.ControllerTests
         }
 
         [Fact]
-        public void GivenCategoryId_WhenGetCountryIsCalled_ThenReturnsBadRequest()
+        public void GivenId_WhenGetCountryIsCalled_ThenReturnsBadRequest()
         {
             //Arrange
-            _countryRepository.Setup(x => x.CountryExists(countryDTO.Id)).Returns(true);
-            _countryRepository.Setup(x => x.GetCountry(countryDTO.Id)).Returns(It.IsAny<Country>());
-            _mapper.Setup(mapper => mapper.Map<CountryDTO>(It.IsAny<Country>()))
-                .Returns(countryDTO);
+            _countryRepository.Setup(x => x.CountryExists(countryDTO.Id))
+                .Returns(true);
             _controller.ModelState.AddModelError("", "Model state is invalid.");
 
             //Act
             var result = _controller.GetCountry(countryDTO.Id);
 
             //Assert
-            var okResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.NotNull(result);
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestObjectResult.StatusCode);
             Assert.False(_controller.ModelState.IsValid);
-            _countryRepository.Verify(x => x.GetCountry(countryDTO.Id), Times.Once);
             _countryRepository.Verify(x => x.CountryExists(countryDTO.Id), Times.Once);
-            _mapper.Verify(x => x.Map<CountryDTO>(It.IsAny<Country>()), Times.Once);
         }
         #endregion
 
         #region GetCountryOfAnOwner
         [Fact]
-        public void GivenCategoryId_WhenGetCountryOfAnOwnerIsCalled_ThenReturnsCountryOfTheOwner()
+        public void GivenId_WhenGetCountryOfAnOwnerIsCalled_ThenReturnsCountryOfTheOwner()
         {
             //Arrange
             var country = new Country() { Id = countryDTO.Id, Name = countryDTO.Name };
@@ -157,8 +146,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             //Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var actual = Assert.IsType<CountryDTO>(okResult.Value);
-
-            Assert.NotNull(result);
+            Assert.Equal(200, okResult.StatusCode);
             Assert.Equal(JsonSerializer.Serialize(countryDTO), JsonSerializer.Serialize(actual));
             _countryRepository.Verify(x => x.GetCountryByOwner(It.IsAny<int>()), Times.Once);
             _ownerRepository.Verify(x => x.OwnerExists(It.IsAny<int>()), Times.Once);
@@ -166,7 +154,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         }
 
         [Fact]
-        public void GivenCategoryId_WhenGetCountryOfAnOwnerIsCalled_ThenReturnsNotFound()
+        public void GivenId_WhenGetCountryOfAnOwnerIsCalled_ThenReturnsNotFound()
         {
             //Arrange
             _ownerRepository.Setup(x => x.OwnerExists(It.IsAny<int>())).Returns(false);
@@ -175,60 +163,56 @@ namespace ReviewApp.UnitTests.ControllerTests
             var result = _controller.GetCountryOfAnOwner(It.IsAny<int>());
 
             //Assert
-            Assert.IsType<NotFoundResult>(result);
-            Assert.NotNull(result);
+            var notFound = Assert.IsType<NotFoundResult>(result);
+            Assert.Equal(404, notFound.StatusCode);
             _ownerRepository.Verify(x => x.OwnerExists(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
-        public void GivenCategoryId_WhenGetCountryOfAnOwnerIsCalled_ThenReturnsBadRequest()
+        public void GivenId_WhenGetCountryOfAnOwnerIsCalled_ThenReturnsBadRequest()
         {
             //Arrange
-            var country = new Country() { Id = countryDTO.Id, Name = countryDTO.Name };
-            _ownerRepository.Setup(x => x.OwnerExists(It.IsAny<int>())).Returns(true);
-            _countryRepository.Setup(x => x.GetCountryByOwner(It.IsAny<int>()))
-                .Returns(country);
-            _mapper.Setup(mapper => mapper.Map<CountryDTO>(It.IsAny<Country>()))
-                .Returns(countryDTO);
+            _ownerRepository.Setup(x => x.OwnerExists(It.IsAny<int>()))
+                .Returns(true);
             _controller.ModelState.AddModelError("", "Model state is invalid.");
 
             //Act
             var result = _controller.GetCountryOfAnOwner(It.IsAny<int>());
 
             //Assert
-            var okResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.NotNull(result);
+            var badRequestObjectResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestObjectResult.StatusCode);
             Assert.False(_controller.ModelState.IsValid);
-            _countryRepository.Verify(x => x.GetCountryByOwner(It.IsAny<int>()), Times.Once);
             _ownerRepository.Verify(x => x.OwnerExists(It.IsAny<int>()), Times.Once);
-            _mapper.Verify(x => x.Map<CountryDTO>(It.IsAny<Country>()), Times.Once);
         }
         #endregion
 
         #region CreateCountry
         [Fact]
-        public void GivenCategory_WhenCreateCountryIsCalled_ThenReturnsOk()
+        public void GivenCountry_WhenCreateCountryIsCalled_ThenReturnsOk()
         {
             //Arrange
             List<Country> countries = [new Country() { Id = 1, Name = "Test 2"}];
-            _countryRepository.Setup(x => x.GetCountries()).Returns(countries);
+            _countryRepository.Setup(x => x.GetCountries())
+                .Returns(countries);
             _mapper.Setup(mapper => mapper.Map<Country>(It.IsAny<CountryDTO>()))
-                .Returns(It.IsAny<Country>());
-            _countryRepository.Setup(x => x.CreateCountry(It.IsAny<Country>())).Returns(true);
+                .Returns(new Country());
+            _countryRepository.Setup(x => x.CreateCountry(It.IsAny<Country>()))
+                .Returns(true);
 
             //Act
             var result = _controller.CreateCountry(countryDTO);
 
             //Assert
-            Assert.IsType<OkObjectResult>(result);
-            Assert.NotNull(result);
+            var okObjectResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(200, okObjectResult.StatusCode);
             _countryRepository.Verify(x => x.GetCountries(), Times.Once);
             _countryRepository.Verify(x => x.CreateCountry(It.IsAny<Country>()), Times.Once);
             _mapper.Verify(x => x.Map<Country>(It.IsAny<CountryDTO>()), Times.Once);
         }
 
         [Fact]
-        public void GivenCategory_WhenCreateCountryIsCalled_ThenReturnsBadRequestWhenCountryIsNull()
+        public void GivenCountry_WhenCreateCountryIsCalled_ThenReturnsBadRequestWhenCountryIsNull()
         {
             //Arrange
 
@@ -236,12 +220,12 @@ namespace ReviewApp.UnitTests.ControllerTests
             var result = _controller.CreateCountry(null);
 
             //Assert
-            Assert.IsType<BadRequestObjectResult>(result);
-            Assert.NotNull(result);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
         }
 
         [Fact]
-        public void GivenCategory_WhenCreateCountryIsCalled_ThenReturnsBadRequestWhenModelStateIsInvalid()
+        public void GivenCountry_WhenCreateCountryIsCalled_ThenReturnsBadRequestWhenModelStateIsInvalid()
         {
             //Arrange
             List<Country> countries = [new Country() { Id = 1, Name = "Test 2" }];
@@ -252,13 +236,16 @@ namespace ReviewApp.UnitTests.ControllerTests
             var result = _controller.CreateCountry(countryDTO);
 
             //Assert
-            Assert.IsType<BadRequestObjectResult>(result);
-            Assert.NotNull(result);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
             Assert.False(_controller.ModelState.IsValid);
         }
 
+        /// <summary>
+        /// something is wrong
+        /// </summary>
         [Fact]
-        public void GivenCategory_WhenCreateCountryIsCalled_ThenReturnsModelErrorWhenCountryAlreadyExists()
+        public void GivenCountry_WhenCreateCountryIsCalled_ThenReturnsModelErrorWhenCountryAlreadyExists()
         {
             //Arrange
             List<Country> countries = [new Country() { Id = 1, Name = "Test" }];
@@ -275,21 +262,22 @@ namespace ReviewApp.UnitTests.ControllerTests
         }
 
         [Fact]
-        public void GivenCategory_WhenCreateCountryIsCalled_ThenReturnsServerError()
+        public void GivenCountry_WhenCreateCountryIsCalled_ThenReturnsServerError()
         {
             //Arrange
             List<Country> countries = [new Country() { Id = 1, Name = "Test 2" }];
-            _countryRepository.Setup(x => x.GetCountries()).Returns(countries);
+            _countryRepository.Setup(x => x.GetCountries())
+                .Returns(countries);
             _mapper.Setup(mapper => mapper.Map<Country>(It.IsAny<CountryDTO>()))
-                .Returns(It.IsAny<Country>);
-            _countryRepository.Setup(x => x.CreateCountry(It.IsAny<Country>())).Returns(false);
+                .Returns(new Country());
+            _countryRepository.Setup(x => x.CreateCountry(It.IsAny<Country>()))
+                .Returns(false);
 
             //Act
             var result = _controller.CreateCountry(countryDTO);
 
             //Assert
             var model = Assert.IsType<ObjectResult>(result);
-            Assert.NotNull(result);
             Assert.Equal(500, model.StatusCode);
             Assert.False(_controller.ModelState.IsValid);
             _countryRepository.Verify(x => x.GetCountries(), Times.Once);
@@ -303,9 +291,10 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenIdAndCountry_WhenUpdateCountryIsCalled_ThenReturnsNoContent()
         {
             //Arrange
-            _countryRepository.Setup(x => x.CountryExists(It.IsAny<int>())).Returns(true);
+            _countryRepository.Setup(x => x.CountryExists(It.IsAny<int>()))
+                .Returns(true);
             _mapper.Setup(mapper => mapper.Map<Country>(It.IsAny<CountryDTO>()))
-                .Returns(It.IsAny<Country>);
+                .Returns(new Country());
             _countryRepository.Setup(x => x.UpdateCountry(It.IsAny<Country>()))
                 .Returns(true);
 
@@ -313,15 +302,15 @@ namespace ReviewApp.UnitTests.ControllerTests
             var result = _controller.UpdateCountry(countryDTO.Id, countryDTO);
 
             //Assert
-            Assert.IsType<NoContentResult>(result);
-            Assert.NotNull(result);
+            var noContent = Assert.IsType<NoContentResult>(result);
+            Assert.Equal(204, noContent.StatusCode);
             _countryRepository.Verify(x => x.CountryExists(It.IsAny<int>()), Times.Once);
             _countryRepository.Verify(x => x.UpdateCountry(It.IsAny<Country>()), Times.Once);
             _mapper.Verify(x => x.Map<Country>(It.IsAny<CountryDTO>()), Times.Once);
         }
 
         [Fact]
-        public void GivenIdAndCountry_WhenUpdateCountryIsCalled_ThenReturnsBadRequestWhenCategoryIsNull()
+        public void GivenIdAndCountry_WhenUpdateCountryIsCalled_ThenReturnsBadRequestWhenCountryIsNull()
         {
             //Arrange
 
@@ -329,8 +318,8 @@ namespace ReviewApp.UnitTests.ControllerTests
             var result = _controller.UpdateCountry(1, null);
 
             //Assert
-            Assert.IsType<BadRequestObjectResult>(result);
-            Assert.NotNull(result);
+            var badRequestResult =  Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
         }
 
         [Fact]
@@ -343,13 +332,13 @@ namespace ReviewApp.UnitTests.ControllerTests
             var result = _controller.UpdateCountry(1, countryDTO);
 
             //Assert
-            Assert.IsType<BadRequestObjectResult>(result);
-            Assert.NotNull(result);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal(400, badRequestResult.StatusCode);
             Assert.False(_controller.ModelState.IsValid);
         }
 
         [Fact]
-        public void GivenIdAndCategory_WhenUpdateCategoryIsCalled_ThenReturnsCategoryIsNotFound()
+        public void GivenIdAndCountry_WhenUpdateCountryIsCalled_ThenReturnsCountryIsNotFound()
         {
             //Arrange
             _countryRepository.Setup(x => x.CountryExists(It.IsAny<int>())).Returns(false);
@@ -359,7 +348,6 @@ namespace ReviewApp.UnitTests.ControllerTests
 
             //Assert
             var model = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.NotNull(result);
             Assert.Equal(404, model.StatusCode);
             Assert.True(_controller.ModelState.IsValid);
         }
@@ -369,17 +357,18 @@ namespace ReviewApp.UnitTests.ControllerTests
         {
             //Arrange
             var category = new Category { Id = countryDTO.Id, Name = "new Category" };
-            _countryRepository.Setup(x => x.CountryExists(category.Id)).Returns(true);
+            _countryRepository.Setup(x => x.CountryExists(category.Id))
+                .Returns(true);
             _mapper.Setup(mapper => mapper.Map<Country>(It.IsAny<CountryDTO>()))
-                .Returns(It.IsAny<Country>);
-            _countryRepository.Setup(x => x.UpdateCountry(It.IsAny<Country>())).Returns(false);
+                .Returns(new Country());
+            _countryRepository.Setup(x => x.UpdateCountry(It.IsAny<Country>()))
+                .Returns(false);
 
             //Act
             var result = _controller.UpdateCountry(category.Id, countryDTO);
 
             //Assert
             var model = Assert.IsType<ObjectResult>(result);
-            Assert.NotNull(result);
             Assert.Equal(500, model.StatusCode);
             _countryRepository.Verify(x => x.CountryExists(category.Id), Times.Once);
             _countryRepository.Verify(x => x.UpdateCountry(It.IsAny<Country>()), Times.Once);
@@ -393,7 +382,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         {
             //Arrange
             _countryRepository.Setup(x => x.CountryExists(It.IsAny<int>())).Returns(true);
-            _countryRepository.Setup(x => x.GetCountry(1)).Returns(It.IsAny<Country>());
+            _countryRepository.Setup(x => x.GetCountry(1)).Returns(new Country());
 
             //Act
             var result = _controller.DeleteCountry(It.IsAny<int>());
@@ -419,29 +408,8 @@ namespace ReviewApp.UnitTests.ControllerTests
             //Assert
             var model = Assert.IsType<NotFoundResult>(result);
             Assert.Equal(404, model.StatusCode);
-            Assert.NotNull(result);
             Assert.IsAssignableFrom<NotFoundResult>(result);
             _countryRepository.Verify(x => x.CountryExists(It.IsAny<int>()), Times.Once);
-        }
-
-        [Fact]
-        public void GivenId_WhenDeleteCountryIsCalled_ThenReturnsModelError()
-        {
-            //Arrange
-            _countryRepository.Setup(x => x.CountryExists(It.IsAny<int>())).Returns(true);
-            _countryRepository.Setup(x => x.GetCountry(It.IsAny<int>())).Returns(It.IsAny<Country>());
-            _controller.ModelState.AddModelError("", "Something wrong with the model");
-
-            //Act
-            var result = _controller.DeleteCountry(It.IsAny<int>());
-
-            //Assert
-            var model = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(400, model.StatusCode);
-            Assert.NotNull(result);
-            Assert.False(_controller.ModelState.IsValid);
-            _countryRepository.Verify(x => x.CountryExists(It.IsAny<int>()), Times.Once);
-            _countryRepository.Verify(x => x.GetCountry(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
@@ -449,7 +417,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         {
             //Arrange
             _countryRepository.Setup(x => x.CountryExists(It.IsAny<int>())).Returns(true);
-            _countryRepository.Setup(x => x.GetCountry(It.IsAny<int>())).Returns(It.IsAny<Country>());
+            _countryRepository.Setup(x => x.GetCountry(It.IsAny<int>())).Returns(new Country());
             _countryRepository.Setup(x => x.DeleteCountry(It.IsAny<Country>())).Returns(false);
 
             //Act
@@ -458,7 +426,6 @@ namespace ReviewApp.UnitTests.ControllerTests
             //Assert
             var model = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, model.StatusCode);
-            Assert.NotNull(result);
             Assert.False(_controller.ModelState.IsValid);
             _countryRepository.Verify(x => x.CountryExists(It.IsAny<int>()), Times.Once);
             _countryRepository.Verify(x => x.GetCountry(It.IsAny<int>()), Times.Once);

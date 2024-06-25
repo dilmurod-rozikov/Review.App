@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
@@ -33,11 +34,11 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetReviews()
         {
-            var reviews = _mapper
-                .Map<List<ReviewDTO>>(_reviewRepository.GetReviews());
-
             if (!ModelState.IsValid)
                 return BadRequest();
+
+            var reviews = _mapper
+                .Map<List<ReviewDTO>>(_reviewRepository.GetReviews());
 
             return Ok(reviews);
         }
@@ -51,11 +52,11 @@ namespace ReviewApp.Controllers
             if (!_reviewRepository.ReviewExists(reviewId))
                 return NotFound();
 
-            var review = _mapper
-                .Map<ReviewDTO>(_reviewRepository.GetReview(reviewId));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var review = _mapper
+               .Map<ReviewDTO>(_reviewRepository.GetReview(reviewId));
 
             return Ok(review);
         }
@@ -69,11 +70,11 @@ namespace ReviewApp.Controllers
             if (!_reviewRepository.ReviewExists(pokemonId))
                 return NotFound();
 
-            var reviews = _mapper
-                .Map<List<ReviewDTO>>(_reviewRepository.GetReviewsOfAPokemon(pokemonId));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var reviews = _mapper
+                .Map<List<ReviewDTO>>(_reviewRepository.GetReviewsOfAPokemon(pokemonId));
 
             return Ok(reviews);
         }
@@ -83,19 +84,29 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(404)]
         public IActionResult CreateReview([FromQuery]int pokemonId, [FromQuery] int reviewerId, [FromBody] ReviewDTO reviewDTO)
         {
-            if (reviewDTO is null)
-                return BadRequest(ModelState);
-
-            if (!ModelState.IsValid)
+            if (reviewDTO is null|| !ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var reviewMap = _mapper.Map<Review>(reviewDTO);
             reviewMap.Pokemon = _pokemonRepository.GetPokemon(pokemonId);
             reviewMap.Reviewer = _reviewerRepository.GetById(reviewerId);
 
-            if (!_reviewRepository.CreateReview(reviewMap))
+            try
             {
-                ModelState.AddModelError("", "Something went wrong while saving");
+                if (!_reviewRepository.CreateReview(reviewMap))
+                {
+                    ModelState.AddModelError("", "Something went wrong while saving.");
+                    return StatusCode(500, ModelState);
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                ModelState.AddModelError("", $"Database Update Exception: {ex.InnerException?.Message ?? ex.Message}");
+                return StatusCode(500, ModelState);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"An error occurred: {ex.Message}");
                 return StatusCode(500, ModelState);
             }
 
@@ -108,7 +119,7 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateReview(int reviewId, [FromBody] ReviewDTO review)
         {
-            if (review is null)
+            if (review is null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
             if (reviewId != review.Id)
@@ -116,9 +127,6 @@ namespace ReviewApp.Controllers
 
             if (!_reviewRepository.ReviewExists(reviewId))
                 return NotFound(ModelState);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             var reviewMap = _mapper.Map<Review>(review);
 
@@ -141,9 +149,6 @@ namespace ReviewApp.Controllers
                 return NotFound();
 
             var reviewDelete = _reviewRepository.GetReview(reviewId);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             if (!_reviewRepository.DeleteReview(reviewDelete))
             {
