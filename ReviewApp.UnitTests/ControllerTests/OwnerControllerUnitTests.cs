@@ -45,7 +45,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         {
             //Arrange
             List<OwnerDTO> ownerDTOs = [ownerDTO];
-            _ownerRepositry.Setup(x => x.GetOwners()).Returns(owners);
+            _ownerRepositry.Setup(x => x.GetOwners()).Returns([]);
             _mapper.Setup(mapper => mapper.Map<List<OwnerDTO>>(It.IsAny<IEnumerable<Owner>>()))
                 .Returns(ownerDTOs);
 
@@ -141,15 +141,12 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenId_WhenGetPokemonByOwnerIdIsCalled_ThenReturnsPokemon()
         {
             //Arrange
-            List<PokemonDTO> pokemonDTOs =[new()];
-            List<Pokemon> pokemons = [new()];
-
             _ownerRepositry.Setup(x => x.OwnerExists(It.IsAny<int>()))
                 .Returns(true);
             _ownerRepositry.Setup(x => x.GetPokemonsByOwner(It.IsAny<int>()))
-                .Returns(pokemons);
+                .Returns([]);
             _mapper.Setup(mapper => mapper.Map<List<PokemonDTO>>(It.IsAny<List<Pokemon>>()))
-                .Returns(pokemonDTOs);
+                .Returns([]);
 
             //Act
             var result = _controller.GetPokemonByOwner(It.IsAny<int>());

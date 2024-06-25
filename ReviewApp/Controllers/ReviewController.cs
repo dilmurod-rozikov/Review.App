@@ -87,6 +87,10 @@ namespace ReviewApp.Controllers
             if (reviewDTO is null|| !ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (!_reviewerRepository.ReviewerExists(reviewerId) ||
+                !_pokemonRepository.PokemonExists(pokemonId))
+                return NotFound(ModelState);            
+
             var reviewMap = _mapper.Map<Review>(reviewDTO);
             reviewMap.Pokemon = _pokemonRepository.GetPokemon(pokemonId);
             reviewMap.Reviewer = _reviewerRepository.GetById(reviewerId);

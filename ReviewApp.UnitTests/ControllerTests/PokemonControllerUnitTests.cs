@@ -5,7 +5,6 @@ using ReviewApp.Controllers;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
-using ReviewApp.Repository;
 using System.Text.Json;
 
 namespace ReviewApp.UnitTests.ControllerTests
@@ -30,21 +29,12 @@ namespace ReviewApp.UnitTests.ControllerTests
             Rating = 5,
         };
 
-        private static readonly PokemonOwner pokemonOwner = new()
-        {
-            OwnerId = 1,
-            PokemonId = 1,
-            Owner = new(),
-            Pokemon = new(),
-        };
-
         private static readonly Pokemon pokemon = new()
         {
             Id = 1,
             Name = "Test 2",
             BirthDate = DateOnly.MinValue,
             Reviews = [review],
-            PokemonOwners = [pokemonOwner]
         };
 
         public PokemonControllerUnitTests()
@@ -519,7 +509,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         }
 
         [Fact]
-        public void GivenId_WhenDDeletePokemonIsCalled_ThenReturnsNotFound()
+        public void GivenId_WhenDeletePokemonIsCalled_ThenReturnsNotFound()
         {
             //Arrange
             _pokemonRepository.Setup(x => x.PokemonExists(It.IsAny<int>())).Returns(false);
