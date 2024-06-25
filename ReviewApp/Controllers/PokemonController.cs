@@ -61,6 +61,23 @@ namespace ReviewApp.Controllers
             return Ok(pokemon);
         }
 
+        [HttpGet("{id}/rating")]
+        [ProducesResponseType(200, Type = typeof(decimal))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult GetPokemonRating(int id)
+        {
+            if (!_pokemonRepository.PokemonExists(id))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var rating = _pokemonRepository.GetPokemonRating(id);
+
+            return Ok(rating);
+        }
+
         [HttpPost]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
@@ -69,17 +86,17 @@ namespace ReviewApp.Controllers
             if (pokemon is null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var pokemons = _pokemonRepository.GetPokemons()
-                .Where(x => x.Name.Trim().Equals(pokemon.Name.Trim(), StringComparison.OrdinalIgnoreCase));
+            var pokemonExists = _pokemonRepository.GetPokemons()
+                .Any(x => x.Name.Trim().Equals(pokemon.Name.Trim(), StringComparison.OrdinalIgnoreCase));
 
-            if (!pokemons.IsNullOrEmpty())
+            if (pokemonExists)
             {
                 ModelState.AddModelError("", "Pokemon already exists");
                 return StatusCode(422, ModelState);
             }
 
-            if (_ownerRepository.OwnerExists(ownerId) ||
-                _categoryRepository.CategoryExists(categoryId))
+            if (!_ownerRepository.OwnerExists(ownerId) ||
+                !_categoryRepository.CategoryExists(categoryId))
             {
                 return NotFound(ModelState);
             }
@@ -118,15 +135,15 @@ namespace ReviewApp.Controllers
             if (pokemon is null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (pokemonId != pokemon.Id)
-                return BadRequest(ModelState);
-
             if (!_pokemonRepository.PokemonExists(pokemonId) ||
-                _ownerRepository.OwnerExists(ownerId) ||
-                _categoryRepository.CategoryExists(categoryId))
+                !_ownerRepository.OwnerExists(ownerId) ||
+                !_categoryRepository.CategoryExists(categoryId))
             {
                 return NotFound(ModelState);
             }
+
+            if (pokemonId != pokemon.Id)
+                return BadRequest(ModelState);
 
             var pokemonMap = _mapper.Map<Pokemon>(pokemon);
             if (!_pokemonRepository.UpdatePokemon(ownerId, categoryId, pokemonMap))
@@ -136,23 +153,6 @@ namespace ReviewApp.Controllers
             }
 
             return NoContent();
-        }
-
-        [HttpGet("{id}/rating")]
-        [ProducesResponseType(200, Type = typeof(decimal))]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        public IActionResult GetPokemonRating(int id)
-        {
-            if (!_pokemonRepository.PokemonExists(id))
-                return NotFound();
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var rating = _pokemonRepository.GetPokemonRating(id);
-
-            return Ok(rating);
         }
 
         [HttpDelete("{pokemonId}")]
