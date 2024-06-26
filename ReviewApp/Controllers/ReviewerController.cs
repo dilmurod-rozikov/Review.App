@@ -80,11 +80,11 @@ namespace ReviewApp.Controllers
                 return BadRequest(ModelState);
 
             var trimmedReviewerName = reviewerDTO.LastName.Trim() + reviewerDTO.FirstName.Trim();
-            var reviewers = _reviewerRepository.GetAll()
-                .Where(x => (x.LastName.Trim() + x.FirstName.Trim())
+            var reviewerExists = _reviewerRepository.GetAll()
+                .Any(x => (x.LastName.Trim() + x.FirstName.Trim())
                 .Equals(trimmedReviewerName, StringComparison.OrdinalIgnoreCase));
 
-            if (!reviewers.IsNullOrEmpty())
+            if (reviewerExists)
             {
                 ModelState.AddModelError("", "Reviewer already exists");
                 return StatusCode(422, ModelState);

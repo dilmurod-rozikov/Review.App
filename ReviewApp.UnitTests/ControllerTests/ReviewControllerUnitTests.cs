@@ -79,7 +79,7 @@ namespace ReviewApp.UnitTests.ControllerTests
 
         #region GetReview
         [Fact]
-        public void GivenId_WhenGetPokemonIsCalled_ThenReturnsReview()
+        public void GivenId_WhenGetReviewIsCalled_ThenReturnsReview()
         {
             //Arrange
             _reviewRepository.Setup(x => x.ReviewExists(It.IsAny<int>()))
@@ -103,7 +103,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         }
 
         [Fact]
-        public void GivenId_WhenGetPokemonIsCalled_ThenReturnsNotFound()
+        public void GivenId_WhenGetReviewIsCalled_ThenReturnsNotFound()
         {
             //Arrange
             _reviewRepository.Setup(x => x.ReviewExists(It.IsAny<int>())).Returns(false);
@@ -118,7 +118,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         }
 
         [Fact]
-        public void GivenId_WhenGetPokemonIsCalled_ThenReturnsBadRequest()
+        public void GivenId_WhenGetReviewIsCalled_ThenReturnsBadRequest()
         {
             //Arrange
             _reviewRepository.Setup(x => x.ReviewExists(It.IsAny<int>()))
