@@ -120,7 +120,7 @@ namespace ReviewApp.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
+
             if (!_categoryRepositry.CategoryExists(categoryId))
                 return NotFound(ModelState);
 

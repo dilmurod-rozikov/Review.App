@@ -131,11 +131,10 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenId_WhenGetReviewsOfReviewerIsCalled_ThenReturnsReviewers()
         {
             //Arrange
-            List<ReviewerDTO> reviewers = [reviewerDTO];
             _reviewerRepository.Setup(x => x.ReviewerExists(It.IsAny<int>()))
                 .Returns(true);
             _reviewerRepository.Setup(x => x.GetReviewsByReviewer(It.IsAny<int>()))
-                .Returns([new Review()]);
+                .Returns([]);
             _mapper.Setup(mapper => mapper.Map<List<ReviewDTO>>(It.IsAny<List<Review>>()))
                 .Returns([]);
 
@@ -198,8 +197,7 @@ namespace ReviewApp.UnitTests.ControllerTests
                 .Returns(true);
 
             //Act
-            var result = _controller
-                .CreateReviewer(reviewerDTO);
+            var result = _controller.CreateReviewer(reviewerDTO);
 
             //Assert
             var okResult = Assert.IsType<OkObjectResult>(result);

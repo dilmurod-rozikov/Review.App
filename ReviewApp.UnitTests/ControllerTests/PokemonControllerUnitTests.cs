@@ -23,20 +23,6 @@ namespace ReviewApp.UnitTests.ControllerTests
             BirthDate = DateOnly.MinValue,
         };
 
-        private static readonly Review review = new()
-        {
-            Id = 1,
-            Rating = 5,
-        };
-
-        private static readonly Pokemon pokemon = new()
-        {
-            Id = 1,
-            Name = "Test 2",
-            BirthDate = DateOnly.MinValue,
-            Reviews = [review],
-        };
-
         public PokemonControllerUnitTests()
         {
             _ownerRepositry = new Mock<IOwnerRepository>();
@@ -152,6 +138,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenId_WhenGetPokemonRatingIsCalled_ThenReturnsPokemonRating()
         {
             //Arrange
+            Review review = new() { Rating = 5 };
             _pokemonRepository.Setup(x => x.PokemonExists(It.IsAny<int>()))
                 .Returns(true);
             _pokemonRepository.Setup(x => x.GetPokemonRating(It.IsAny<int>()))
@@ -209,7 +196,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         {
             //Arrange
             _pokemonRepository.Setup(x => x.GetPokemons())
-                .Returns([pokemon]);
+                .Returns([]);
             _ownerRepositry.Setup(x => x.OwnerExists(It.IsAny<int>()))
                 .Returns(true);
             _categoryRepository.Setup(x => x.CategoryExists(It.IsAny<int>()))
@@ -268,11 +255,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenOwnerIdAndCountryIdAndPokemon_WhenCreatePokemonIsCalled_ThenReturnsModelErrorWhenPokemonAlreadyExists()
         {
             //Arrange
-            List<Pokemon> pokemons = [new Pokemon()
-            {
-                Id = 2,
-                Name = "Test 1",
-            }];
+            List<Pokemon> pokemons = [new Pokemon(){ Name = "Test 1" }];
             _pokemonRepository.Setup(x => x.GetPokemons()).Returns(pokemons);
 
             //Act
@@ -290,7 +273,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         {
             //Arrange
             _pokemonRepository.Setup(x => x.GetPokemons())
-                .Returns([pokemon]);
+                .Returns([]);
             _ownerRepositry.Setup(x => x.OwnerExists(It.IsAny<int>()))
                 .Returns(false);
 
@@ -309,7 +292,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         {
             //Arrange
             _pokemonRepository.Setup(x => x.GetPokemons())
-                .Returns([pokemon]);
+                .Returns([]);
             _categoryRepository.Setup(x => x.CategoryExists(It.IsAny<int>()))
                 .Returns(false);
 
@@ -328,7 +311,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         {
             //Arrange
             _pokemonRepository.Setup(x => x.GetPokemons())
-                .Returns([pokemon]);
+                .Returns([]);
             _ownerRepositry.Setup(x => x.OwnerExists(It.IsAny<int>()))
                 .Returns(true);
             _categoryRepository.Setup(x => x.CategoryExists(It.IsAny<int>()))
@@ -368,7 +351,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             _categoryRepository.Setup(x => x.CategoryExists(It.IsAny<int>()))
                 .Returns(true);
             _mapper.Setup(mapper => mapper.Map<Pokemon>(It.IsAny<PokemonDTO>()))
-                .Returns(pokemon);
+                .Returns(new Pokemon());
             _pokemonRepository.Setup(x => x.UpdatePokemon(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Pokemon>()))
                 .Returns(true);
 
@@ -399,7 +382,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         }
 
         [Fact]
-        public void GivenPokemonIdCategoryIdOwnerIdAndPokemon_WhenUpdatePokemonIsCalled_ThenReturnsBadRequestWhenModelStateIsInvalid()
+        public void GivenPokemonIdCategoryIdOwnerIdAndPokemon_WhenUpdatePokemonIsCalled_ThenReturnsBadRequestOnModelStateIsInvalid()
         {
             //Arrange
             _controller.ModelState.AddModelError("", "Model state is invalid.");
@@ -469,7 +452,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             _categoryRepository.Setup(x => x.CategoryExists(It.IsAny<int>()))
                 .Returns(true);
             _mapper.Setup(mapper => mapper.Map<Pokemon>(It.IsAny<PokemonDTO>()))
-                .Returns(pokemon);
+                .Returns(new Pokemon());
             _pokemonRepository.Setup(x => x.UpdatePokemon(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Pokemon>()))
                 .Returns(false);
 

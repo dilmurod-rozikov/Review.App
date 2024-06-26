@@ -82,9 +82,9 @@ namespace ReviewApp.Controllers
                 return BadRequest(ModelState);
 
             var countryExists = _countryRepositry.GetCountries()
-                .FirstOrDefault(x => x.Name.Trim().Equals(country.Name.Trim(), StringComparison.CurrentCultureIgnoreCase));
+                .Any(x => x.Name.Trim().Equals(country.Name.Trim(), StringComparison.CurrentCultureIgnoreCase));
 
-            if (countryExists is not null)
+            if (countryExists)
             {
                 ModelState.AddModelError("", "Country already exists.");
                 return StatusCode(422, ModelState);

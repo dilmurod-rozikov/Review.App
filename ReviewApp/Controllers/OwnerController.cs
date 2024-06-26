@@ -83,19 +83,19 @@ namespace ReviewApp.Controllers
             if (owner is null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var ownerExists = _ownerRepository.GetOwners()
-                .FirstOrDefault(x => x.Name.Trim().Equals(owner.Name.Trim(), StringComparison.CurrentCultureIgnoreCase));
+            if (!_countryRepository.CountryExists(countryId))
+                return NotFound(ModelState);
 
-            if (ownerExists is not null)
+            var ownerExists = _ownerRepository.GetOwners()
+                .Any(x => x.Name.Trim().Equals(owner.Name.Trim(), StringComparison.CurrentCultureIgnoreCase));
+
+            if (ownerExists)
             {
                 ModelState.AddModelError("", "Owner already exists.");
                 return StatusCode(422, ModelState);
             }
 
             var ownerMap = _mapper.Map<Owner>(owner);
-
-            if (!_countryRepository.CountryExists(countryId))
-                return NotFound(ModelState);
 
             ownerMap.Country = _countryRepository.GetCountry(countryId);
             try

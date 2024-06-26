@@ -5,7 +5,6 @@ using ReviewApp.Controllers;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
-using ReviewApp.Repository;
 using System.Text.Json;
 
 namespace ReviewApp.UnitTests.ControllerTests
@@ -46,7 +45,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             //Arrange
             List<ReviewDTO> previewDTOs = [reviewDTO];
             _reviewRepository.Setup(x => x.GetReviews()).Returns([]);
-            _mapper.Setup(mapper => mapper.Map<List<ReviewDTO>>(It.IsAny<IEnumerable<Review>>()))
+            _mapper.Setup(mapper => mapper.Map<List<ReviewDTO>>(It.IsAny<List<Review>>()))
                 .Returns(previewDTOs);
 
             //Act
@@ -58,7 +57,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             Assert.Equal(200, okResult.StatusCode);
             Assert.Equal(JsonSerializer.Serialize(previewDTOs), JsonSerializer.Serialize(actual));
             _reviewRepository.Verify(x => x.GetReviews(), Times.Once);
-            _mapper.Verify(x => x.Map<List<ReviewDTO>>(It.IsAny<IEnumerable<Review>>()), Times.Once);
+            _mapper.Verify(x => x.Map<List<ReviewDTO>>(It.IsAny<List<Review>>()), Times.Once);
         }
 
         [Fact]

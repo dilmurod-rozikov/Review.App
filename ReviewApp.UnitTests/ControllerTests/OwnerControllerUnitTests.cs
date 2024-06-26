@@ -21,16 +21,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             Name = "Test",
             Gym = "New Gym"
         };
-        private static readonly List<Owner> owners =
-        [
-            new Owner()
-            {
-                Id = 1,
-                Name = "Test 2",
-                Gym = "New Gym",
-                Country = new Country() { Id = 1, Name = "Country" }
-            }
-        ];
+        
         public OwnerControllerUnitTests()
         {
             _ownerRepositry = new Mock<IOwnerRepository>();
@@ -45,8 +36,9 @@ namespace ReviewApp.UnitTests.ControllerTests
         {
             //Arrange
             List<OwnerDTO> ownerDTOs = [ownerDTO];
-            _ownerRepositry.Setup(x => x.GetOwners()).Returns([]);
-            _mapper.Setup(mapper => mapper.Map<List<OwnerDTO>>(It.IsAny<IEnumerable<Owner>>()))
+            _ownerRepositry.Setup(x => x.GetOwners())
+                .Returns([]);
+            _mapper.Setup(mapper => mapper.Map<List<OwnerDTO>>(It.IsAny<List<Owner>>()))
                 .Returns(ownerDTOs);
 
             //Act
@@ -179,8 +171,6 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenId_WhenGetPokemonsByOwnerIsCalled_ThenReturnsBadRequest()
         {
             //Arrange
-            List<PokemonDTO> pokemons =[new()];
-
             _ownerRepositry.Setup(x => x.OwnerExists(It.IsAny<int>()))
                 .Returns(true);
             _controller.ModelState.AddModelError("", "Model state is invalid.");
@@ -202,10 +192,10 @@ namespace ReviewApp.UnitTests.ControllerTests
         {
             //Arrange
             _ownerRepositry.Setup(x => x.GetOwners())
-                .Returns(owners);
-            _countryRepository.Setup(x => x.CountryExists(1))
+                .Returns([]);
+            _countryRepository.Setup(x => x.CountryExists(It.IsAny<int>()))
                 .Returns(true);
-            _countryRepository.Setup(x => x.GetCountry(1))
+            _countryRepository.Setup(x => x.GetCountry(It.IsAny<int>()))
                 .Returns(new Country());
             _mapper.Setup(mapper => mapper.Map<Owner>(It.IsAny<OwnerDTO>()))
                 .Returns(new Owner());
@@ -213,14 +203,15 @@ namespace ReviewApp.UnitTests.ControllerTests
                 .Returns(true);
 
             //Act
-            var result = _controller.CreateOwner(1, ownerDTO);
+            var result = _controller.CreateOwner(It.IsAny<int>(), ownerDTO);
 
             //Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(200, okResult.StatusCode);
+            _countryRepository.Verify(x => x.CountryExists(It.IsAny<int>()), Times.Once);
             _ownerRepositry.Verify(x => x.GetOwners(), Times.Once);
             _ownerRepositry.Verify(x => x.CreateOwner(It.IsAny<Owner>()), Times.Once);
-            _countryRepository.Verify(x => x.GetCountry(1), Times.Once);
+            _countryRepository.Verify(x => x.GetCountry(It.IsAny<int>()), Times.Once);
             _mapper.Verify(x => x.Map<Owner>(It.IsAny<OwnerDTO>()), Times.Once);
         }
 
@@ -241,7 +232,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenOwnerAndCountryId_WhenCreateOwnerIsCalled_ThenReturnsBadRequestWhenModelStateIsInvalid()
         {
             //Arrange
-            _ownerRepositry.Setup(x => x.GetOwners()).Returns(owners);
+            _ownerRepositry.Setup(x => x.GetOwners()).Returns([]);
             _controller.ModelState.AddModelError("", "Model state is invalid.");
 
             //Act
@@ -253,16 +244,12 @@ namespace ReviewApp.UnitTests.ControllerTests
             Assert.False(_controller.ModelState.IsValid);
         }
 
-        //There is A ``BUG``
         [Fact]
         public void GivenOwnerAndCountryId_WhenCreateOwnerIsCalled_ThenReturnsModelErrorWhenOwnerAlreadyExists()
         {
             //Arrange
-            List<Owner> owners = [new Owner()
-            {
-                Id = 2,
-                Name = "Test",
-            }];
+            List<Owner> owners = [new Owner() { Name = "Test" }];
+            _countryRepository.Setup(x => x.CountryExists(It.IsAny<int>())).Returns(true);
             _ownerRepositry.Setup(x => x.GetOwners()).Returns(owners);
 
             //Act
@@ -273,6 +260,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             Assert.Equal(422, model.StatusCode);
             Assert.False(_controller.ModelState.IsValid);
             _ownerRepositry.Verify(x => x.GetOwners(), Times.Once);
+            _countryRepository.Verify(x => x.CountryExists(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
@@ -282,7 +270,7 @@ namespace ReviewApp.UnitTests.ControllerTests
             _countryRepository.Setup(x => x.CountryExists(It.IsAny<int>()))
                 .Returns(true);
             _ownerRepositry.Setup(x => x.GetOwners())
-                .Returns(owners);
+                .Returns([]);
             _mapper.Setup(mapper => mapper.Map<Owner>(It.IsAny<OwnerDTO>()))
                 .Returns(new Owner());
             _ownerRepositry.Setup(x => x.CreateOwner(It.IsAny<Owner>()))
@@ -306,21 +294,20 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenIdAndOwner_WhenUpdateOwnerIsCalled_ThenReturnsNoContent()
         {
             //Arrange
-            var owner = new Owner { Id = 1, Name = "New Owner", Gym = "New Gym" };
-            _ownerRepositry.Setup(x => x.OwnerExists(owner.Id))
+            _ownerRepositry.Setup(x => x.OwnerExists(It.IsAny<int>()))
                 .Returns(true);
             _mapper.Setup(mapper => mapper.Map<Owner>(It.IsAny<OwnerDTO>()))
-                .Returns(owner);
+                .Returns(new Owner());
             _ownerRepositry.Setup(x => x.UpdateOwner(It.IsAny<Owner>()))
                 .Returns(true);
 
             //Act
-            var result = _controller.UpdateOwner(owner.Id, ownerDTO);
+            var result = _controller.UpdateOwner(ownerDTO.Id, ownerDTO);
 
             //Assert
             var noContent = Assert.IsType<NoContentResult>(result);
             Assert.Equal(204, noContent.StatusCode);
-            _ownerRepositry.Verify(x => x.OwnerExists(owner.Id), Times.Once);
+            _ownerRepositry.Verify(x => x.OwnerExists(It.IsAny<int>()), Times.Once);
             _ownerRepositry.Verify(x => x.UpdateOwner(It.IsAny<Owner>()), Times.Once);
             _mapper.Verify(x => x.Map<Owner>(It.IsAny<OwnerDTO>()), Times.Once);
         }
@@ -357,7 +344,7 @@ namespace ReviewApp.UnitTests.ControllerTests
         public void GivenIdAndOwner_WhenUpdateOwnerIsCalled_ThenReturnsOwnerIsNotFound()
         {
             //Arrange
-            _ownerRepositry.Setup(x => x.OwnerExists(ownerDTO.Id)).Returns(false);
+            _ownerRepositry.Setup(x => x.OwnerExists(It.IsAny<int>())).Returns(false);
 
             //Act
             var result = _controller.UpdateOwner(ownerDTO.Id, ownerDTO);
@@ -366,18 +353,18 @@ namespace ReviewApp.UnitTests.ControllerTests
             var model = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, model.StatusCode);
             Assert.True(_controller.ModelState.IsValid);
+            _ownerRepositry.Verify(x => x.OwnerExists(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
         public void GivenIdAndOwner_WhenUpdateOwnerIsCalled_ThenReturnsErrorWhenUpdateFails()
         {
             //Arrange
-            Owner owner = new() { Id = ownerDTO.Id };
             _ownerRepositry.Setup(x => x.OwnerExists(It.IsAny<int>()))
                 .Returns(true);
             _mapper.Setup(mapper => mapper.Map<Owner>(It.IsAny<OwnerDTO>()))
                 .Returns(new Owner());
-            _ownerRepositry.Setup(x => x.UpdateOwner(owner))
+            _ownerRepositry.Setup(x => x.UpdateOwner(It.IsAny<Owner>()))
                 .Returns(false);
 
             //Act
