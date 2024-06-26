@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
-using ReviewApp.Repository;
 
 namespace ReviewApp.Controllers
 {
@@ -26,11 +26,11 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetReviewers()
         {
-            var reviewers = _mapper
-                .Map<List<ReviewerDTO>>(_reviewerRepository.GetAll());
-
             if (!ModelState.IsValid)
                 return BadRequest();
+
+            var reviewers = _mapper
+                .Map<List<ReviewerDTO>>(_reviewerRepository.GetAll());
 
             return Ok(reviewers);
         }
@@ -44,11 +44,11 @@ namespace ReviewApp.Controllers
             if (!_reviewerRepository.ReviewerExists(reviewerId))
                 return NotFound();
 
-            var reviewer = _mapper
-                .Map<ReviewerDTO>(_reviewerRepository.GetById(reviewerId));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var reviewer = _mapper
+                .Map<ReviewerDTO>(_reviewerRepository.GetById(reviewerId));
 
             return Ok(reviewer);
         }
@@ -62,11 +62,11 @@ namespace ReviewApp.Controllers
             if (!_reviewerRepository.ReviewerExists(reviewerId))
                 return NotFound();
 
-            var reviews = _mapper
-                .Map<List<ReviewDTO>>(_reviewerRepository.GetReviewsByReviewer(reviewerId));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var reviews = _mapper
+                .Map<List<ReviewDTO>>(_reviewerRepository.GetReviewsByReviewer(reviewerId));
 
             return Ok(reviews);
         }
@@ -76,28 +76,38 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(404)]
         public IActionResult CreateReviewer([FromBody] ReviewerDTO reviewerDTO)
         {
-            if (reviewerDTO is null)
+            if (reviewerDTO is null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var trimmedReviewerName = reviewerDTO.LastName.Trim() + reviewerDTO.FirstName.Trim();
-            var reviewers = _reviewerRepository.GetAll()
-                .Where(x => (x.LastName.Trim() + x.FirstName.Trim())
+            var reviewerExists = _reviewerRepository.GetAll()
+                .Any(x => (x.LastName.Trim() + x.FirstName.Trim())
                 .Equals(trimmedReviewerName, StringComparison.OrdinalIgnoreCase));
 
-            if (!reviewers.IsNullOrEmpty())
+            if (reviewerExists)
             {
                 ModelState.AddModelError("", "Reviewer already exists");
                 return StatusCode(422, ModelState);
             }
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var reviewerMap = _mapper.Map<Reviewer>(reviewerDTO);
 
-            if (!_reviewerRepository.CreateReviewer(reviewerMap))
+            try
             {
-                ModelState.AddModelError("", "Something went wrong while saving");
+                if (!_reviewerRepository.CreateReviewer(reviewerMap))
+                {
+                    ModelState.AddModelError("", "Something went wrong while saving.");
+                    return StatusCode(500, ModelState);
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                ModelState.AddModelError("", $"Database Update Exception: {ex.InnerException?.Message ?? ex.Message}");
+                return StatusCode(500, ModelState);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"An error occurred: {ex.Message}");
                 return StatusCode(500, ModelState);
             }
 
@@ -108,7 +118,7 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateReview(int reviewerId, [FromBody] ReviewerDTO reviewer)
+        public IActionResult UpdateReviewer(int reviewerId, [FromBody] ReviewerDTO reviewer)
         {
             if (reviewer is null)
                 return BadRequest(ModelState);
@@ -143,9 +153,6 @@ namespace ReviewApp.Controllers
                 return NotFound();
 
             var reviewerDelete = _reviewerRepository.GetById(reviewerId);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             if (!_reviewerRepository.DeleteReviewer(reviewerDelete))
             {

@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
-using ReviewApp.Repository;
 
 namespace ReviewApp.Controllers
 {
@@ -31,11 +30,11 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetOwners()
         {
-            var owners = _mapper
-                .Map<List<OwnerDTO>>(_ownerRepository.GetOwners());
-
             if (!ModelState.IsValid)
                 return BadRequest();
+
+            var owners = _mapper
+                .Map<List<OwnerDTO>>(_ownerRepository.GetOwners());
 
             return Ok(owners);
         }
@@ -49,11 +48,11 @@ namespace ReviewApp.Controllers
             if (!_ownerRepository.OwnerExists(ownerId))
                 return NotFound();
 
-            var owner = _mapper
-                .Map<OwnerDTO>(_ownerRepository.GetOwner(ownerId));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var owner = _mapper
+                .Map<OwnerDTO>(_ownerRepository.GetOwner(ownerId));
 
             return Ok(owner);
         }
@@ -67,11 +66,11 @@ namespace ReviewApp.Controllers
             if (!_ownerRepository.OwnerExists(ownerId))
                 return NotFound();
 
-            var owner = _mapper
-                .Map<PokemonDTO>(_ownerRepository.GetPokemonsByOwner(ownerId));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var owner = _mapper
+                .Map<List<PokemonDTO>>(_ownerRepository.GetPokemonsByOwner(ownerId));
 
             return Ok(owner);
         }
@@ -81,24 +80,24 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateOwner([FromQuery] int countryId, [FromBody] OwnerDTO owner)
         {
-            if (owner == null)
+            if (owner is null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var ownerExists = _ownerRepository.GetOwners()
-                .FirstOrDefault(x => x.Name.Trim().Equals(owner.Name.Trim(), StringComparison.CurrentCultureIgnoreCase));
+            if (!_countryRepository.CountryExists(countryId))
+                return NotFound(ModelState);
 
-            if (ownerExists != null)
+            var ownerExists = _ownerRepository.GetOwners()
+                .Any(x => x.Name.Trim().Equals(owner.Name.Trim(), StringComparison.CurrentCultureIgnoreCase));
+
+            if (ownerExists)
             {
                 ModelState.AddModelError("", "Owner already exists.");
                 return StatusCode(422, ModelState);
             }
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var ownerMap = _mapper.Map<Owner>(owner);
-            ownerMap.Country = _countryRepository.GetCountry(countryId);
 
+            ownerMap.Country = _countryRepository.GetCountry(countryId);
             try
             {
                 if (!_ownerRepository.CreateOwner(ownerMap))
@@ -127,7 +126,7 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateOwner(int ownerId, [FromBody] OwnerDTO owner)
         {
-            if (owner is null)
+            if (owner is null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
             if (ownerId != owner.Id)
@@ -135,9 +134,6 @@ namespace ReviewApp.Controllers
 
             if (!_ownerRepository.OwnerExists(ownerId))
                 return NotFound(ModelState);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             var ownerMap = _mapper.Map<Owner>(owner);
 
@@ -160,9 +156,6 @@ namespace ReviewApp.Controllers
                 return NotFound();
 
             var ownerDelete = _ownerRepository.GetOwner(ownerId);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             if (!_ownerRepository.DeleteOwner(ownerDelete))
             {

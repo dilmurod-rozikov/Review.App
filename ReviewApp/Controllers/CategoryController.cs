@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ReviewApp.DTO;
 using ReviewApp.Interfaces;
 using ReviewApp.Models;
@@ -23,9 +24,10 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetCategories()
         {
-            var categories = _mapper.Map<List<CategoryDTO>>(_categoryRepositry.GetCategories());
             if (!ModelState.IsValid)
                 return BadRequest();
+            var categories = _mapper
+                .Map<List<CategoryDTO>>(_categoryRepositry.GetCategories());
 
             return Ok(categories);
         }
@@ -34,15 +36,16 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(200, Type = typeof(Pokemon))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult GetPokemon(int categoryId)
+        public IActionResult GetCategory(int categoryId)
         {
             if (!_categoryRepositry.CategoryExists(categoryId))
                 return NotFound();
 
-            var category = _mapper.Map<CategoryDTO>(_categoryRepositry.GetCategory(categoryId));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var category = _mapper
+                .Map<CategoryDTO>(_categoryRepositry.GetCategory(categoryId));
 
             return Ok(category);
         }
@@ -52,10 +55,14 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetPokemonsByCategory(int categoryId)
         {
-            var pokemons = _mapper.Map<List<PokemonDTO>>(_categoryRepositry.GetPokemonsByCategory(categoryId));
+            if (!_categoryRepositry.CategoryExists(categoryId))
+                return NotFound();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var pokemons = _mapper
+                .Map<List<PokemonDTO>>(_categoryRepositry.GetPokemonsByCategory(categoryId));
 
             return Ok(pokemons);
         }
@@ -65,11 +72,11 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateCategory([FromBody] CategoryDTO category)
         {
-            if (category == null)
+            if (category is null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var categoryExists = _categoryRepositry.GetCategories()
-                .Where(x => x.Name.Trim().ToLower() == category.Name.Trim().ToLower())
+                .Where(x => x.Name.Trim().Equals(category.Name.Trim(), StringComparison.CurrentCultureIgnoreCase))
                 .FirstOrDefault();
 
             if (categoryExists != null)
@@ -78,13 +85,24 @@ namespace ReviewApp.Controllers
                 return StatusCode(422, ModelState);
             }
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var categoryMap = _mapper.Map<Category>(category);
-            if (!_categoryRepositry.CreateCategory(categoryMap))
+            
+            try
             {
-                ModelState.AddModelError("", "Something went wrong while saving.");
+                if (!_categoryRepositry.CreateCategory(categoryMap))
+                {
+                    ModelState.AddModelError("", "Something went wrong while saving.");
+                    return StatusCode(500, ModelState);
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                ModelState.AddModelError("", $"Database Update Exception: {ex.InnerException?.Message ?? ex.Message}");
+                return StatusCode(500, ModelState);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"An error occurred: {ex.Message}");
                 return StatusCode(500, ModelState);
             }
 
@@ -97,20 +115,16 @@ namespace ReviewApp.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateCategory(int categoryId, [FromBody] CategoryDTO category)
         {
-            if (category is null)
+            if (category is null || categoryId != category.Id)
                 return BadRequest(ModelState);
 
-            if (categoryId != category.Id)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             if (!_categoryRepositry.CategoryExists(categoryId))
                 return NotFound(ModelState);
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var categoryMap = _mapper.Map<Category>(category);
-
             if(!_categoryRepositry.UpdateCategory(categoryMap))
             {
                 ModelState.AddModelError("", "Something went wrong while updating");
@@ -130,9 +144,6 @@ namespace ReviewApp.Controllers
                 return NotFound();
 
             var categoryDelete = _categoryRepositry.GetCategory(categoryId);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             if (!_categoryRepositry.DeleteCategory(categoryDelete))
             {
